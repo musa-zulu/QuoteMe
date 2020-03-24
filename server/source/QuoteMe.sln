@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.Server", "QuoteMe.Server\QuoteMe.Server.csproj", "{CAF74974-31EB-40A8-BB66-3DC79A706158}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuoteMe.Server", "QuoteMe.Server\QuoteMe.Server.csproj", "{CAF74974-31EB-40A8-BB66-3DC79A706158}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.Contracts", "QuoteMe.Contracts\QuoteMe.Contracts.csproj", "{29EF21D6-BB09-4C4B-8E69-1A331A7C8353}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.Contracts.Tests", "QuoteMe.Contracts.Tests\QuoteMe.Contracts.Tests.csproj", "{65AC90AD-FF94-46EC-8C2A-394AB13D76E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.Server.Tests", "QuoteMe.Server.Tests\QuoteMe.Server.Tests.csproj", "{C29441C5-DCD3-49B5-B195-A0C77641F2DA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.Core", "QuoteMe.Core\QuoteMe.Core.csproj", "{037E274A-1BBE-4E28-9617-C374D874F197}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuoteMe.Server.Tests", "QuoteMe.Server.Tests\QuoteMe.Server.Tests.csproj", "{C29441C5-DCD3-49B5-B195-A0C77641F2DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.DB", "QuoteMe.DB\QuoteMe.DB.csproj", "{C92A8127-0235-4E28-899D-852B69D5BC17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.DB.Tests", "QuoteMe.DB.Tests\QuoteMe.DB.Tests.csproj", "{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{C29441C5-DCD3-49B5-B195-A0C77641F2DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C29441C5-DCD3-49B5-B195-A0C77641F2DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C29441C5-DCD3-49B5-B195-A0C77641F2DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{037E274A-1BBE-4E28-9617-C374D874F197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{037E274A-1BBE-4E28-9617-C374D874F197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{037E274A-1BBE-4E28-9617-C374D874F197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{037E274A-1BBE-4E28-9617-C374D874F197}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C92A8127-0235-4E28-899D-852B69D5BC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C92A8127-0235-4E28-899D-852B69D5BC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C92A8127-0235-4E28-899D-852B69D5BC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C92A8127-0235-4E28-899D-852B69D5BC17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
