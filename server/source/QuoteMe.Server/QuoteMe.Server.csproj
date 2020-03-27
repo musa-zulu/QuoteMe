@@ -17,5 +17,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\QuoteMe.Contracts\QuoteMe.Contracts.csproj" />
+    <ProjectReference Include="..\QuoteMe.DB\QuoteMe.DB.csproj" />
+  </ItemGroup>
+
 
 </Project>
