@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace QuoteMe.DB.Domain
 {
@@ -9,8 +10,8 @@ namespace QuoteMe.DB.Domain
         public string Demographics { get; set; }
         public string Email { get; set; }
         public string Description { get; set; }
-        public Guid PhoneID { get; set; }
-        public Guid AddressID { get; set; }
-        public Guid ServicesOfferedID { get; set; }
+        public List<Phone> PhoneNumbers { get; set; }
+        public List<Address> Addresses { get; set; }
+        public List<ServicesOffered> ServicesOffered { get; set; }
     }
 }

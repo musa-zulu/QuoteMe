@@ -2,6 +2,7 @@
 using PeanutButter.TestUtils.Generic;
 using QuoteMe.DB.Domain;
 using System;
+using System.Collections.Generic;
 
 namespace QuoteMe.DB.Tests.Domain
 {
@@ -25,9 +26,9 @@ namespace QuoteMe.DB.Tests.Domain
         [TestCase("Demographics", typeof(string))]
         [TestCase("Email", typeof(string))]
         [TestCase("Description", typeof(string))]
-        [TestCase("PhoneID", typeof(Guid))]
-        [TestCase("AddressID", typeof(Guid))]
-        [TestCase("ServicesOfferedID", typeof(Guid))]
+        [TestCase("PhoneNumbers", typeof(List<Phone>))]
+        [TestCase("Addresses", typeof(List<Address>))]
+        [TestCase("ServicesOffered", typeof(List<ServicesOffered>))]
         public void Type_ShouldHaveProperty(string propertyName, Type propertyType)
         {
             //---------------Set up test pack-------------------

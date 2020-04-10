@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builders\Models\BusinessBuilder.cs" />
     <Compile Include="Builders\Models\ClientBuilder.cs" />
     <Compile Include="Helpers\FakeDbSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
