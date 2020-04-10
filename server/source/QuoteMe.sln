@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.DB", "QuoteMe.DB\Qu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.DB.Tests", "QuoteMe.DB.Tests\QuoteMe.DB.Tests.csproj", "{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuoteMe.Tests.Common", "QuoteMe.Tests.Common\QuoteMe.Tests.Common.csproj", "{78838CB5-836F-454D-B65F-702C7C9BEE69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AFB5468-73A5-427F-A93C-C3BC2B80A83C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78838CB5-836F-454D-B65F-702C7C9BEE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78838CB5-836F-454D-B65F-702C7C9BEE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78838CB5-836F-454D-B65F-702C7C9BEE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78838CB5-836F-454D-B65F-702C7C9BEE69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

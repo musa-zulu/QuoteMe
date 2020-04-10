@@ -2,9 +2,9 @@
 
 namespace QuoteMe.DB.Domain
 {
-    public class Person : EntityBase
+    public class Client : EntityBase
     {
-        public Guid PersonID { get; set; }
+        public Guid ClientID { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }

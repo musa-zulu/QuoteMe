@@ -73,7 +73,7 @@
     <Compile Include="Domain\TestCountryRegion.cs" />
     <Compile Include="Domain\TestEntityBase.cs" />
     <Compile Include="Domain\TestPaginationFilter.cs" />
-    <Compile Include="Domain\TestPerson.cs" />
+    <Compile Include="Domain\TestClient.cs" />
     <Compile Include="Domain\TestPhone.cs" />
     <Compile Include="Domain\TestPhoneType.cs" />
     <Compile Include="Domain\TestServicesOffered.cs" />

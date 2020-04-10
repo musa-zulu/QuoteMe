@@ -1,5 +1,4 @@
 ﻿using QuoteMe.Contracts.Interfaces.Services;
-using QuoteMe.Contracts.V1.Requests.Queries;
 using QuoteMe.Contracts.V1.Responses;
 using QuoteMe.DB.Domain;
 using System.Collections.Generic;
@@ -12,11 +11,11 @@ namespace QuoteMe.Server.Helpers
         public static PagedResponse<T> CreatePaginatedResponse<T>(IUriService uriService, PaginationFilter pagination, List<T> response)
         {
             var nextPage = pagination.PageNumber >= 1
-                ? uriService.GetAllUri(new PaginationQuery(pagination.PageNumber + 1, pagination.PageSize)).ToString()
+                ? uriService.GetAllUri().ToString()
                 : null;
 
             var previousPage = pagination.PageNumber - 1 >= 1
-                ? uriService.GetAllUri(new PaginationQuery(pagination.PageNumber - 1, pagination.PageSize)).ToString()
+                ? uriService.GetAllUri().ToString()
                 : null;
 
             return new PagedResponse<T>

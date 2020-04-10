@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using QuoteMe.Contracts.Interfaces.Services;
-using QuoteMe.Contracts.V1.Requests.Queries;
+﻿using QuoteMe.Contracts.Interfaces.Services;
 using System;
 
 namespace QuoteMe.Contracts.Services
@@ -14,19 +12,9 @@ namespace QuoteMe.Contracts.Services
             _baseUri = baseUri;
         }
 
-        public Uri GetAllUri(PaginationQuery pagination = null)
+        public Uri GetAllUri()
         {
-            var uri = new Uri(_baseUri);
-
-            if (pagination == null)
-            {
-                return uri;
-            }
-
-            var modifiedUri = QueryHelpers.AddQueryString(_baseUri, "pageNumber", pagination.PageNumber.ToString());
-            modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pagination.PageSize.ToString());
-
-            return new Uri(modifiedUri);
+            return new Uri(_baseUri);
         }
     }
 }

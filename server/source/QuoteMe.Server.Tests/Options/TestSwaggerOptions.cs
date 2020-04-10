@@ -1,12 +1,12 @@
 ﻿using NUnit.Framework;
 using PeanutButter.TestUtils.Generic;
-using QuoteMe.DB.Domain;
+using QuoteMe.Server.Options;
 using System;
 
-namespace QuoteMe.DB.Tests.Domain
+namespace QuoteMe.Server.Tests.Options
 {
     [TestFixture]
-    public class TestPerson
+    public class TestSwaggerOptions
     {
         [Test]
         public void Construct()
@@ -16,27 +16,17 @@ namespace QuoteMe.DB.Tests.Domain
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            Assert.DoesNotThrow(() => new Person());
+            Assert.DoesNotThrow(() => new SwaggerOptions());
             //---------------Test Result -----------------------
         }
 
-        [TestCase("PersonID", typeof(Guid))]
-        [TestCase("Title", typeof(string))]
-        [TestCase("FirstName", typeof(string))]
-        [TestCase("MiddleName", typeof(string))]
-        [TestCase("LastName", typeof(string))]
-        [TestCase("Suffix", typeof(string))]
-        [TestCase("Email", typeof(string))]
-        [TestCase("EmailPromotion", typeof(bool))]
-        [TestCase("AdditionalContactInfo", typeof(string))]
-        [TestCase("Demographics", typeof(string))]
-        [TestCase("PersonTypeID", typeof(Guid))]
-        [TestCase("AddressID", typeof(Guid))]
-        [TestCase("PhoneID", typeof(Guid))]
+        [TestCase("JsonRoute", typeof(string))]
+        [TestCase("Description", typeof(string))]
+        [TestCase("UiEndpoint", typeof(string))]
         public void Type_ShouldHaveProperty(string propertyName, Type propertyType)
         {
             //---------------Set up test pack-------------------
-            var sut = typeof(Person);
+            var sut = typeof(SwaggerOptions);
 
             //---------------Assert Precondition----------------
 
