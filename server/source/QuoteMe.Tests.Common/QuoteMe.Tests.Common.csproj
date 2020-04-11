@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builders\Models\AddressBuilder.cs" />
-    <Compile Include="Builders\Models\AddressTypeBuilder.cs" />
+    <Compile Include="Builders\Models\PhoneNumberBuilder.cs" />
     <Compile Include="Builders\Models\BusinessBuilder.cs" />
     <Compile Include="Builders\Models\ClientBuilder.cs" />
     <Compile Include="Helpers\DbSetSupport.cs" />

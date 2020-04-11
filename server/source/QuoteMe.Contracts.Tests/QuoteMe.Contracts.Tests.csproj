@@ -143,7 +143,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\TestAddressService.cs" />
-    <Compile Include="Services\TestAddressTypeService.cs" />
+    <Compile Include="Services\TestPhoneNumberService.cs" />
     <Compile Include="Services\TestBusinessService.cs" />
     <Compile Include="Services\TestClientService.cs" />
     <Compile Include="Services\TestUriService.cs" />

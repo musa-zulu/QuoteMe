@@ -3,7 +3,7 @@ using QuoteMe.DB.Domain;
 
 namespace QuoteMe.Tests.Common.Builders.Models
 {
-    public class AddressTypeBuilder : GenericBuilder<AddressTypeBuilder, AddressType>
+    public class PhoneNumberBuilder : GenericBuilder<PhoneNumberBuilder, Phone>
     {
     }
 }

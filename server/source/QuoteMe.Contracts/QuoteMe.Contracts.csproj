@@ -131,12 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\Services\IAddressService.cs" />
-    <Compile Include="Interfaces\Services\IAddressTypeService.cs" />
+    <Compile Include="Interfaces\Services\IPhoneNumberService.cs" />
     <Compile Include="Interfaces\Services\IBusinessService.cs" />
     <Compile Include="Interfaces\Services\IClientService.cs" />
     <Compile Include="Interfaces\Services\IUriService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AddressTypeService.cs" />
+    <Compile Include="Services\PhoneNumberService.cs" />
     <Compile Include="Services\BusinessService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\AddressService.cs" />

@@ -12,7 +12,7 @@ using System.Data.Entity;
 namespace QuoteMe.Contracts.Tests.Services
 {
     [TestFixture]
-    public class TestAddressTypeService
+    public class TestPhoneNumberService
     {
         [Test]
         public void Construct()
@@ -22,7 +22,7 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Assert Precondition---------------
 
             //---------------Execute Test ----------------------
-            Assert.DoesNotThrow(() => new AddressService(Substitute.For<IApplicationDbContext>()));
+            Assert.DoesNotThrow(() => new PhoneNumberService(Substitute.For<IApplicationDbContext>()));
             //---------------Test Result -----------------------
         }
 
@@ -35,212 +35,212 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => new AddressService(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new PhoneNumberService(null));
             //---------------Test Result -----------------------
             Assert.AreEqual("applicationDbContext", ex.ParamName);
         }
 
         [Test]
-        public void GetAddressTypes_GivenNoAddressTypeExist_ShouldReturnEmptyList()
+        public void GetPhoneNumbers_GivenNoPhoneNumberExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
             var applicationDbContext = CreateApplicationDbContext();
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = addressTypeService.GetAddressTypes();
+            var result = phoneNumberService.GetPhoneNumbers();
             //---------------Test Result -----------------------
             Assert.AreEqual(0, result.Count);
         }
 
         [Test]
-        public void GetAddressTypes_GivenAddressTypesExistInRepo_ShouldReturnListOfAddressTypes()
+        public void GetPhoneNumbers_GivenPhoneNumbersExistInRepo_ShouldReturnListOfPhoneNumbers()
         {
             //---------------Set up test pack-------------------           
-            var addressTypes = new List<AddressType>();
-            var dbSet = DbSetSupport<AddressType>.CreateDbSetWithAddRemoveSupport(addressTypes);
+            var phoneNumbers = new List<Phone>();
+            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
-            var addressType = AddressTypeBuilder.BuildRandom();
-            addressTypes.Add(addressType);
-            dbSet.GetEnumerator().Returns(_ => addressTypes.GetEnumerator());
-            applicationDbContext.AddressTypes.Returns(_ => dbSet);
+            var phoneNumber = PhoneNumberBuilder.BuildRandom();
+            phoneNumbers.Add(phoneNumber);
+            dbSet.GetEnumerator().Returns(_ => phoneNumbers.GetEnumerator());
+            applicationDbContext.PhoneNumbers.Returns(_ => dbSet);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = addressTypeService.GetAddressTypes();
+            var result = phoneNumberService.GetPhoneNumbers();
             //---------------Test Result -----------------------
             Assert.AreEqual(1, result.Count);
         }
 
         [Test]
-        public void CreateAddressType_GivenAddressTypeIsNull_ShouldThrowException()
+        public void CreatePhoneNumber_GivenPhoneNumberIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
             var applicationDbContext = CreateApplicationDbContext();
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                addressTypeService.CreateAddressType(null);
+                phoneNumberService.CreatePhoneNumber(null);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("addressType", ex.ParamName);
+            Assert.AreEqual("phone", ex.ParamName);
         }
 
         [Test]
-        public void CreateAddressType_GivenAddressType_ShouldSaveAddressType()
+        public void CreatePhoneNumber_GivenPhoneNumber_ShouldSavePhoneNumber()
         {
             //---------------Set up test pack-------------------
-            var addressType = AddressTypeBuilder.BuildRandom();
-            var addressTypes = new List<AddressType>();
+            var phoneNumber = PhoneNumberBuilder.BuildRandom();
+            var phoneNumbers = new List<Phone>();
 
-            var dbSet = DbSetSupport<AddressType>.CreateDbSetWithAddRemoveSupport(addressTypes);
+            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressTypeService.CreateAddressType(addressType);
+            phoneNumberService.CreatePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            var addressTypesFromRepo = addressTypeService.GetAddressTypes();
-            CollectionAssert.Contains(addressTypesFromRepo, addressType);
+            var phoneNumbersFromRepo = phoneNumberService.GetPhoneNumbers();
+            CollectionAssert.Contains(phoneNumbersFromRepo, phoneNumber);
         }
 
         [Test]
-        public void CreateAddressType_GivenValidAddressType_ShouldCallSaveChanges()
+        public void CreatePhoneNumber_GivenValidPhoneNumber_ShouldCallSaveChanges()
         {
             //---------------Set up test pack-------------------
-            var addressType = AddressTypeBuilder.BuildRandom();
-            var addressTypes = new List<AddressType>();
-            var dbSet = DbSetSupport<AddressType>.CreateDbSetWithAddRemoveSupport(addressTypes);
+            var phoneNumber = PhoneNumberBuilder.BuildRandom();
+            var phoneNumbers = new List<Phone>();
+            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressTypeService.CreateAddressType(addressType);
+            phoneNumberService.CreatePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
             applicationDbContext.Received().SaveChanges();
         }
 
         [Test]
-        public void GetAddressTypeById_GivenIdIsNull_ShouldThrowExcption()
+        public void GetPhoneNumberById_GivenIdIsNull_ShouldThrowExcption()
         {
             //---------------Set up test pack-------------------
             var applicationDbContext = CreateApplicationDbContext();
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                addressTypeService.GetAddressTypeById(Guid.Empty);
+                phoneNumberService.GetPhoneNumberById(Guid.Empty);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("addressTypeID", ex.ParamName);
+            Assert.AreEqual("phoneID", ex.ParamName);
         }
 
         [Test]
-        public void GetAddressTypeById_GivenValidId_ShoulReturnAddressTypeWithMatchingId()
+        public void GetPhoneNumberById_GivenValidId_ShoulReturnPhoneNumberWithMatchingId()
         {
             //---------------Set up test pack-------------------
-            var addressType = new AddressTypeBuilder().WithRandomProps().Build();
-            var dbSet = new FakeDbSet<AddressType> { addressType };
+            var phoneNumber = new PhoneNumberBuilder().WithRandomProps().Build();
+            var dbSet = new FakeDbSet<Phone> { phoneNumber };
             var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = addressTypeService.GetAddressTypeById(addressType.AddressTypeID);
+            var result = phoneNumberService.GetPhoneNumberById(phoneNumber.PhoneID);
             //---------------Test Result -----------------------
-            Assert.AreEqual(addressType, result);
+            Assert.AreEqual(phoneNumber, result);
         }
 
         [Test]
-        public void DeleteAddressType_GivenEmptyAddressType_ShouldThrowException()
+        public void DeletePhoneNumber_GivenEmptyPhoneNumber_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
             var applicationDbContext = CreateApplicationDbContext();
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                addressTypeService.DeleteAddressType(null);
+                phoneNumberService.DeletePhoneNumber(null);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("addressType", ex.ParamName);
+            Assert.AreEqual("phone", ex.ParamName);
         }
 
         [Test]
-        public void DeleteAddressType_GivenValidAddressType_ShouldDeleteAddressType()
+        public void DeletePhoneNumber_GivenValidPhoneNumber_ShouldDeletePhoneNumber()
         {
             //---------------Set up test pack-------------------
-            var addressTypes = new List<AddressType>();
-            var addressType = AddressTypeBuilder.BuildRandom();
+            var phoneNumbers = new List<Phone>();
+            var phoneNumber = PhoneNumberBuilder.BuildRandom();
 
-            var dbSet = DbSetSupport<AddressType>.CreateDbSetWithAddRemoveSupport(addressTypes);
+            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressTypeService.DeleteAddressType(addressType);
+            phoneNumberService.DeletePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            var addressTypesFromRepo = addressTypeService.GetAddressTypes();
-            CollectionAssert.DoesNotContain(addressTypesFromRepo, addressType);
+            var phoneNumbersFromRepo = phoneNumberService.GetPhoneNumbers();
+            CollectionAssert.DoesNotContain(phoneNumbersFromRepo, phoneNumber);
         }
 
         [Test]
-        public void DeleteAddressType_GivenValidAddressType_ShouldCallSaveChanges()
+        public void DeletePhoneNumber_GivenValidPhoneNumber_ShouldCallSaveChanges()
         {
             //---------------Set up test pack-------------------
-            var addressTypes = new List<AddressType>();
-            var addressType = AddressTypeBuilder.BuildRandom();
+            var phoneNumbers = new List<Phone>();
+            var phoneNumber = PhoneNumberBuilder.BuildRandom();
 
-            var dbSet = DbSetSupport<AddressType>.CreateDbSetWithAddRemoveSupport(addressTypes);
+            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressTypeService.DeleteAddressType(addressType);
+            phoneNumberService.DeletePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
             applicationDbContext.Received().SaveChanges();
         }
 
         [Test]
-        public void UpdateAddressType_GivenInvalidExistingAddressType_ShouldThrowException()
+        public void UpdatePhoneNumber_GivenInvalidExistingPhoneNumber_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
             var applicationDbContext = CreateApplicationDbContext();
-            var addressTypeService = CreateAddressTypeService(applicationDbContext);
+            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => addressTypeService.UpdateAddressType(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => phoneNumberService.UpdatePhoneNumber(null));
             //---------------Test Result -----------------------
-            Assert.AreEqual("addressTypeToUpdate", ex.ParamName);
+            Assert.AreEqual("phoneToUpdate", ex.ParamName);
         }
 
-        private static AddressTypeService CreateAddressTypeService(IApplicationDbContext applicationDbContext)
+        private static PhoneNumberService CreatePhoneNumberService(IApplicationDbContext applicationDbContext)
         {
-            return new AddressTypeService(applicationDbContext);
+            return new PhoneNumberService(applicationDbContext);
         }
 
-        private static IApplicationDbContext CreateApplicationDbContext(IDbSet<AddressType> dbSet = null)
+        private static IApplicationDbContext CreateApplicationDbContext(IDbSet<Phone> dbSet = null)
         {
-            if (dbSet == null) dbSet = DbSetSupport<AddressType>.CreateDbSetWithAddRemoveSupport(new List<AddressType>());
+            if (dbSet == null) dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(new List<Phone>());
             var applicationDbContext = Substitute.For<IApplicationDbContext>();
-            applicationDbContext.AddressTypes.Returns(_ => dbSet);
+            applicationDbContext.PhoneNumbers.Returns(_ => dbSet);
             return applicationDbContext;
         }
     }
