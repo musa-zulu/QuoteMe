@@ -130,6 +130,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\Services\IServiceOfferedService.cs" />
     <Compile Include="Interfaces\Services\IAddressService.cs" />
     <Compile Include="Interfaces\Services\IPhoneNumberService.cs" />
     <Compile Include="Interfaces\Services\IBusinessService.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Services\BusinessService.cs" />
     <Compile Include="Services\ClientService.cs" />
     <Compile Include="Services\AddressService.cs" />
+    <Compile Include="Services\ServiceOfferedService.cs" />
     <Compile Include="Services\ServiceTypesOfferedService.cs" />
     <Compile Include="Services\UriService.cs" />
     <Compile Include="V1\Responses\ErrorModel.cs" />

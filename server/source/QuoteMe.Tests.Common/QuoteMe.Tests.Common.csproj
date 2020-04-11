@@ -71,6 +71,7 @@
     <Compile Include="Builders\Models\PhoneNumberBuilder.cs" />
     <Compile Include="Builders\Models\BusinessBuilder.cs" />
     <Compile Include="Builders\Models\ClientBuilder.cs" />
+    <Compile Include="Builders\Models\ServiceOfferedBuilder.cs" />
     <Compile Include="Builders\Models\ServiceTypeBuilder.cs" />
     <Compile Include="Helpers\DbSetSupport.cs" />
     <Compile Include="Helpers\FakeDbSet.cs" />
