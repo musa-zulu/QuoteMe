@@ -58,7 +58,7 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------           
             var businesses = new List<Business>();
-            var dbSet = CreateDbSetWithAddRemoveSupport(businesses);
+            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var businessService = CreateBusinessService(applicationDbContext);
 
@@ -97,7 +97,7 @@ namespace QuoteMe.Contracts.Tests.Services
             var business = BusinessBuilder.BuildRandom();
             var businesses = new List<Business>();
 
-            var dbSet = CreateDbSetWithAddRemoveSupport(businesses);
+            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var businesService = CreateBusinessService(applicationDbContext);
             //---------------Assert Precondition----------------
@@ -115,7 +115,7 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Set up test pack-------------------
             var business = BusinessBuilder.BuildRandom();
             var businesses = new List<Business>();
-            var dbSet = CreateDbSetWithAddRemoveSupport(businesses);
+            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var businesService = CreateBusinessService(applicationDbContext);
             //---------------Assert Precondition----------------
@@ -184,7 +184,7 @@ namespace QuoteMe.Contracts.Tests.Services
             var businesses = new List<Business>();
             var business = BusinessBuilder.BuildRandom();
 
-            var dbSet = CreateDbSetWithAddRemoveSupport(businesses);
+            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var businesService = CreateBusinessService(applicationDbContext);
 
@@ -204,7 +204,7 @@ namespace QuoteMe.Contracts.Tests.Services
             var businesses = new List<Business>();
             var business = BusinessBuilder.BuildRandom();
 
-            var dbSet = CreateDbSetWithAddRemoveSupport(businesses);
+            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var businesService = CreateBusinessService(applicationDbContext);
             //---------------Assert Precondition----------------
@@ -235,29 +235,9 @@ namespace QuoteMe.Contracts.Tests.Services
             return new BusinessService(applicationDbContext);
         }
 
-        private static IDbSet<Business> CreateDbSetWithAddRemoveSupport(List<Business> businesses)
-        {
-            var dbSet = Substitute.For<IDbSet<Business>>();
-
-            dbSet.Add(Arg.Any<Business>()).Returns(info =>
-            {
-                businesses.Add(info.ArgAt<Business>(0));
-                return info.ArgAt<Business>(0);
-            });
-
-            dbSet.Remove(Arg.Any<Business>()).Returns(info =>
-            {
-                businesses.Remove(info.ArgAt<Business>(0));
-                return info.ArgAt<Business>(0);
-            });
-
-            dbSet.GetEnumerator().Returns(_ => businesses.GetEnumerator());
-            return dbSet;
-        }
-
         private static IApplicationDbContext CreateApplicationDbContext(IDbSet<Business> dbSet = null)
         {
-            if (dbSet == null) dbSet = CreateDbSetWithAddRemoveSupport(new List<Business>());
+            if (dbSet == null) dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(new List<Business>());
             var applicationDbContext = Substitute.For<IApplicationDbContext>();
             applicationDbContext.Businesses.Returns(_ => dbSet);
             return applicationDbContext;

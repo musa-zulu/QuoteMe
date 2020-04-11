@@ -58,7 +58,7 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------           
             var clients = new List<Client>();
-            var dbSet = CreateDbSetWithAddRemoveSupport(clients);
+            var dbSet = DbSetSupport<Client>.CreateDbSetWithAddRemoveSupport(clients);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var clientService = CreateClientService(applicationDbContext);
 
@@ -98,7 +98,7 @@ namespace QuoteMe.Contracts.Tests.Services
             var client = ClientBuilder.BuildRandom();
             var clients = new List<Client>();
 
-            var dbSet = CreateDbSetWithAddRemoveSupport(clients);
+            var dbSet = DbSetSupport<Client>.CreateDbSetWithAddRemoveSupport(clients);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var clientService = CreateClientService(applicationDbContext);
             //---------------Assert Precondition----------------
@@ -116,7 +116,7 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Set up test pack-------------------
             var client = ClientBuilder.BuildRandom();
             var clients = new List<Client>();
-            var dbSet = CreateDbSetWithAddRemoveSupport(clients);
+            var dbSet = DbSetSupport<Client>.CreateDbSetWithAddRemoveSupport(clients);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var clientService = CreateClientService(applicationDbContext);
 
@@ -186,7 +186,7 @@ namespace QuoteMe.Contracts.Tests.Services
             var clients = new List<Client>();
             var client = ClientBuilder.BuildRandom();
 
-            var dbSet = CreateDbSetWithAddRemoveSupport(clients);
+            var dbSet = DbSetSupport<Client>.CreateDbSetWithAddRemoveSupport(clients);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var clientService = CreateClientService(applicationDbContext);
 
@@ -206,7 +206,7 @@ namespace QuoteMe.Contracts.Tests.Services
             var clients = new List<Client>();
             var client = ClientBuilder.BuildRandom();
 
-            var dbSet = CreateDbSetWithAddRemoveSupport(clients);
+            var dbSet = DbSetSupport<Client>.CreateDbSetWithAddRemoveSupport(clients);
             var applicationDbContext = CreateApplicationDbContext(dbSet);
             var clientService = CreateClientService(applicationDbContext);
             //---------------Assert Precondition----------------
@@ -236,29 +236,9 @@ namespace QuoteMe.Contracts.Tests.Services
             return new ClientService(applicationDbContext);
         }
 
-        private static IDbSet<Client> CreateDbSetWithAddRemoveSupport(List<Client> clients)
-        {
-            var dbSet = Substitute.For<IDbSet<Client>>();
-
-            dbSet.Add(Arg.Any<Client>()).Returns(info =>
-            {
-                clients.Add(info.ArgAt<Client>(0));
-                return info.ArgAt<Client>(0);
-            });
-
-            dbSet.Remove(Arg.Any<Client>()).Returns(info =>
-            {
-                clients.Remove(info.ArgAt<Client>(0));
-                return info.ArgAt<Client>(0);
-            });
-
-            dbSet.GetEnumerator().Returns(_ => clients.GetEnumerator());
-            return dbSet;
-        }
-
         private static IApplicationDbContext CreateApplicationDbContext(IDbSet<Client> dbSet = null)
         {
-            if (dbSet == null) dbSet = CreateDbSetWithAddRemoveSupport(new List<Client>());
+            if (dbSet == null) dbSet = DbSetSupport<Client>.CreateDbSetWithAddRemoveSupport(new List<Client>());
             var applicationDbContext = Substitute.For<IApplicationDbContext>();
             applicationDbContext.Clients.Returns(_ => dbSet);
             return applicationDbContext;
