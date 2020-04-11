@@ -146,6 +146,7 @@
     <Compile Include="Services\TestPhoneNumberService.cs" />
     <Compile Include="Services\TestBusinessService.cs" />
     <Compile Include="Services\TestClientService.cs" />
+    <Compile Include="Services\TestServiceTypesOfferedService.cs" />
     <Compile Include="Services\TestUriService.cs" />
     <Compile Include="V1\Responses\TestErrorModel.cs" />
     <Compile Include="V1\Responses\TestErrorResponse.cs" />
