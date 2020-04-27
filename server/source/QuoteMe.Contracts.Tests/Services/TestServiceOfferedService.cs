@@ -1,19 +1,42 @@
-﻿using NSubstitute;
+﻿using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using NUnit.Framework;
+using QuoteMe.Contracts.Interfaces.Services;
 using QuoteMe.Contracts.Services;
 using QuoteMe.DB;
 using QuoteMe.DB.Domain;
 using QuoteMe.Tests.Common.Builders.Models;
-using QuoteMe.Tests.Common.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Linq;
 
 namespace QuoteMe.Contracts.Tests.Services
 {
     [TestFixture]
     public class TestServiceOfferedService
     {
+        private ApplicationDbContext _dbContext;
+        private IServiceOfferedService _serviceOfferedService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                                    .UseInMemoryDatabase("testdb")
+                                    .Options;
+            _dbContext = new ApplicationDbContext(options);
+            _dbContext.Database.EnsureCreated();
+
+            _serviceOfferedService = new ServiceOfferedService(_dbContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_dbContext != null)
+                _dbContext.Database.EnsureDeleted();
+        }
+
         [Test]
         public void Construct()
         {
@@ -44,11 +67,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetServiceOffered_GivenNoServiceOfferedExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
+
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = serviceOfferedService.GetServicesOffered();
+            var result = _serviceOfferedService.GetServicesOffered();
             //---------------Test Result -----------------------
             Assert.AreEqual(0, result.Count);
         }
@@ -57,18 +79,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetServicesOffered_GivenServiceOfferedExistInRepo_ShouldReturnListOfServiceOffered()
         {
             //---------------Set up test pack-------------------           
-            var servicesOffered = new List<ServicesOffered>();
-            var dbSet = DbSetSupport<ServicesOffered>.CreateDbSetWithAddRemoveSupport(servicesOffered);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
-
-            var serviceOffered = ServiceOfferedBuilder.BuildRandom();
-            servicesOffered.Add(serviceOffered);
-            dbSet.GetEnumerator().Returns(_ => servicesOffered.GetEnumerator());
-            applicationDbContext.ServicesOffered.Returns(_ => dbSet);
+            SeedDb(1);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = serviceOfferedService.GetServicesOffered();
+            var result = _serviceOfferedService.GetServicesOffered();
             //---------------Test Result -----------------------
             Assert.AreEqual(1, result.Count);
         }
@@ -77,15 +91,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateServiceOffered_GivenServiceOfferedIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                serviceOfferedService.CreateServiceOffered(null);
+                _serviceOfferedService.CreateServiceOffered(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("servicesOffered", ex.ParamName);
@@ -96,18 +108,12 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var serviceOffered = ServiceOfferedBuilder.BuildRandom();
-            var servicesOffered = new List<ServicesOffered>();
-
-            var dbSet = DbSetSupport<ServicesOffered>.CreateDbSetWithAddRemoveSupport(servicesOffered);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            serviceOfferedService.CreateServiceOffered(serviceOffered);
+            var result = _serviceOfferedService.CreateServiceOffered(serviceOffered);
             //---------------Test Result -----------------------
-            var servicesOfferedFromRepo = serviceOfferedService.GetServicesOffered();
-            CollectionAssert.Contains(servicesOfferedFromRepo, serviceOffered);
+            Assert.That(result, Is.EqualTo(true));
         }
 
         [Test]
@@ -115,32 +121,27 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var serviceOffered = ServiceOfferedBuilder.BuildRandom();
-            var servicesOffered = new List<ServicesOffered>();
-            var dbSet = DbSetSupport<ServicesOffered>.CreateDbSetWithAddRemoveSupport(servicesOffered);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
-
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _serviceOfferedService = new ServiceOfferedService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            serviceOfferedService.CreateServiceOffered(serviceOffered);
+            _serviceOfferedService.CreateServiceOffered(serviceOffered);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void GetServiceOfferedById_GivenIdIsNull_ShouldThrowExcption()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                serviceOfferedService.GetServiceOfferedById(Guid.Empty);
+                _serviceOfferedService.GetServiceOfferedById(Guid.Empty);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("serviceOfferedID", ex.ParamName);
@@ -150,13 +151,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetServiceOfferedById_GivenValidId_ShoulReturnServiceOfferedWithMatchingId()
         {
             //---------------Set up test pack-------------------
-            var serviceOffered = new ServiceOfferedBuilder().WithRandomProps().Build();
-            var dbSet = new FakeDbSet<ServicesOffered> { serviceOffered };
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
+            var serviceOffered = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = serviceOfferedService.GetServiceOfferedById(serviceOffered.ServicesOfferedID);
+            var result = _serviceOfferedService.GetServiceOfferedById(serviceOffered.ServicesOfferedID);
             //---------------Test Result -----------------------
             Assert.AreEqual(serviceOffered, result);
         }
@@ -165,15 +163,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteServiceOffered_GivenEmptyServiceOffered_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                serviceOfferedService.DeleteServiceOffered(null);
+                _serviceOfferedService.DeleteServiceOffered(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("servicesOffered", ex.ParamName);
@@ -183,19 +179,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteServiceOffered_GivenValidServiceOffered_ShouldDeleteServiceOffered()
         {
             //---------------Set up test pack-------------------
-            var servicesOffered = new List<ServicesOffered>();
-            var serviceOffered = ServiceOfferedBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<ServicesOffered>.CreateDbSetWithAddRemoveSupport(servicesOffered);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
-
+            var serviceOffered = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            serviceOfferedService.DeleteServiceOffered(serviceOffered);
+            _serviceOfferedService.DeleteServiceOffered(serviceOffered);
             //---------------Test Result -----------------------
-            var servicesOfferedFromRepo = serviceOfferedService.GetServicesOffered();
+            var servicesOfferedFromRepo = _serviceOfferedService.GetServicesOffered();
             CollectionAssert.DoesNotContain(servicesOfferedFromRepo, serviceOffered);
         }
 
@@ -203,45 +193,43 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteServiceOffered_GivenValidServiceOffered_ShouldCallSaveChanges()
         {
             //---------------Set up test pack-------------------
-            var servicesOffered = new List<ServicesOffered>();
-            var serviceOffered = ServiceOfferedBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<ServicesOffered>.CreateDbSetWithAddRemoveSupport(servicesOffered);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
+            var serviceOffered = SeedDb(1).FirstOrDefault();
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _serviceOfferedService = new ServiceOfferedService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            serviceOfferedService.DeleteServiceOffered(serviceOffered);
+            _serviceOfferedService.DeleteServiceOffered(serviceOffered);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdateServiceOffered_GivenInvalidExistingServiceOffered_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var serviceOfferedService = CreateServiceOfferedService(applicationDbContext);
+
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => serviceOfferedService.UpdateServiceOffered(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => _serviceOfferedService.UpdateServiceOffered(null));
             //---------------Test Result -----------------------
             Assert.AreEqual("serviceOfferedToUpdate", ex.ParamName);
         }
 
-        private static ServiceOfferedService CreateServiceOfferedService(IApplicationDbContext applicationDbContext)
+        private List<ServicesOffered> SeedDb(int servicesCount)
         {
-            return new ServiceOfferedService(applicationDbContext);
-        }
+            var servicesOffered = new List<ServicesOffered>();
+            for (int c = 1; c <= servicesCount; c++)
+            {
+                var serviceOffered = new ServiceOfferedBuilder().WithRandomProps().Build();
+                servicesOffered.Add(serviceOffered);
+            }
 
-        private static IApplicationDbContext CreateApplicationDbContext(IDbSet<ServicesOffered> dbSet = null)
-        {
-            if (dbSet == null) dbSet = DbSetSupport<ServicesOffered>.CreateDbSetWithAddRemoveSupport(new List<ServicesOffered>());
-            var applicationDbContext = Substitute.For<IApplicationDbContext>();
-            applicationDbContext.ServicesOffered.Returns(_ => dbSet);
-            return applicationDbContext;
+            foreach (ServicesOffered serviceOffered in servicesOffered)
+                _serviceOfferedService.CreateServiceOffered(serviceOffered);
+
+            return servicesOffered;
         }
     }
 }

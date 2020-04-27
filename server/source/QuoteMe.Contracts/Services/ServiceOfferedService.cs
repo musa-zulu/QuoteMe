@@ -50,17 +50,7 @@ namespace QuoteMe.Contracts.Services
         {
             if (serviceOfferedToUpdate == null)
                 throw new ArgumentNullException(nameof(serviceOfferedToUpdate));
-            var servicesOffered = GetServiceOfferedById(serviceOfferedToUpdate.ServicesOfferedID);
-
-            if (servicesOffered != null)
-            {
-                servicesOffered.AddedBy = serviceOfferedToUpdate.AddedBy;
-                servicesOffered.DateCreated = serviceOfferedToUpdate.DateCreated;
-                servicesOffered.DateLastModified = serviceOfferedToUpdate.DateLastModified;
-                servicesOffered.Description = serviceOfferedToUpdate.Description;
-                servicesOffered.LastUpdatedBy = serviceOfferedToUpdate.LastUpdatedBy;
-                servicesOffered.ServiceTypeID = serviceOfferedToUpdate.ServiceTypeID;
-            }
+            _applicationDbContext.ServicesOffered.Update(serviceOfferedToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
     }

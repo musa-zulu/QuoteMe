@@ -42,36 +42,14 @@ namespace QuoteMe.Contracts.Services
 
         public List<Client> GetClients()
         {
-            return _applicationDbContext
-                ?.Clients
-                .ToList();
+            return _applicationDbContext.Clients.ToList();
         }
 
         public bool UpdateClient(Client clientToUpdate)
         {
             if (clientToUpdate == null)
                 throw new ArgumentNullException(nameof(clientToUpdate));
-            var client = GetClientById(clientToUpdate.ClientID);
-
-            if (client != null)
-            {
-                client.AddedBy = clientToUpdate.AddedBy;
-                client.AdditionalContactInfo = clientToUpdate.AdditionalContactInfo;
-                client.AddressID = clientToUpdate.AddressID;
-                client.DateCreated = clientToUpdate.DateCreated;
-                client.DateLastModified = clientToUpdate.DateLastModified;
-                client.Demographics = clientToUpdate.Demographics;
-                client.Email = clientToUpdate.Email;
-                client.EmailPromotion = clientToUpdate.EmailPromotion;
-                client.FirstName = clientToUpdate.FirstName;
-                client.LastName = clientToUpdate.LastName;
-                client.LastUpdatedBy = clientToUpdate.LastUpdatedBy;
-                client.MiddleName = clientToUpdate.MiddleName;
-                client.PersonTypeID = clientToUpdate.PersonTypeID;
-                client.PhoneID = clientToUpdate.PhoneID;
-                client.Suffix = clientToUpdate.Suffix;
-                client.Title = clientToUpdate.Title;
-            }
+            _applicationDbContext.Clients.Update(clientToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
     }

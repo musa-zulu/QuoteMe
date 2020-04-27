@@ -51,23 +51,7 @@ namespace QuoteMe.Contracts.Services
         {
             if (businessToUpdate == null)
                 throw new ArgumentNullException(nameof(businessToUpdate));
-            var business = GetBusinessById(businessToUpdate.BusinessID);
-
-            if (business != null)
-            {
-                business.AddedBy = businessToUpdate.AddedBy;
-                business.Addresses = businessToUpdate.Addresses;
-                business.DateCreated = businessToUpdate.DateCreated;
-                business.DateLastModified = businessToUpdate.DateLastModified;
-                business.Demographics = businessToUpdate.Demographics;
-                business.Description = businessToUpdate.Description;
-                business.Email = businessToUpdate.Email;
-                business.LastUpdatedBy = businessToUpdate.LastUpdatedBy;
-                business.Name = businessToUpdate.Name;
-                business.PhoneNumbers = businessToUpdate.PhoneNumbers;
-                business.ServicesOffered = businessToUpdate.ServicesOffered;
-
-            }
+            _applicationDbContext.Businesses.Update(businessToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
     }

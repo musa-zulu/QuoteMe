@@ -1,19 +1,41 @@
-﻿using NSubstitute;
+﻿using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using NUnit.Framework;
+using QuoteMe.Contracts.Interfaces.Services;
 using QuoteMe.Contracts.Services;
 using QuoteMe.DB;
 using QuoteMe.DB.Domain;
 using QuoteMe.Tests.Common.Builders.Models;
-using QuoteMe.Tests.Common.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Linq;
 
 namespace QuoteMe.Contracts.Tests.Services
 {
     [TestFixture]
     public class TestPhoneNumberService
     {
+        private ApplicationDbContext _dbContext;
+        private IPhoneNumberService _phoneNumberService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                                    .UseInMemoryDatabase("testdb")
+                                    .Options;
+            _dbContext = new ApplicationDbContext(options);
+            _dbContext.Database.EnsureCreated();
+
+            _phoneNumberService = new PhoneNumberService(_dbContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_dbContext != null)
+                _dbContext.Database.EnsureDeleted();
+        }
         [Test]
         public void Construct()
         {
@@ -44,11 +66,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetPhoneNumbers_GivenNoPhoneNumberExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
+
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = phoneNumberService.GetPhoneNumbers();
+            var result = _phoneNumberService.GetPhoneNumbers();
             //---------------Test Result -----------------------
             Assert.AreEqual(0, result.Count);
         }
@@ -57,18 +78,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetPhoneNumbers_GivenPhoneNumbersExistInRepo_ShouldReturnListOfPhoneNumbers()
         {
             //---------------Set up test pack-------------------           
-            var phoneNumbers = new List<Phone>();
-            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
-
-            var phoneNumber = PhoneNumberBuilder.BuildRandom();
-            phoneNumbers.Add(phoneNumber);
-            dbSet.GetEnumerator().Returns(_ => phoneNumbers.GetEnumerator());
-            applicationDbContext.PhoneNumbers.Returns(_ => dbSet);
+            SeedDb(1);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = phoneNumberService.GetPhoneNumbers();
+            var result = _phoneNumberService.GetPhoneNumbers();
             //---------------Test Result -----------------------
             Assert.AreEqual(1, result.Count);
         }
@@ -77,15 +90,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreatePhoneNumber_GivenPhoneNumberIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                phoneNumberService.CreatePhoneNumber(null);
+                _phoneNumberService.CreatePhoneNumber(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("phone", ex.ParamName);
@@ -96,18 +107,13 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var phoneNumber = PhoneNumberBuilder.BuildRandom();
-            var phoneNumbers = new List<Phone>();
 
-            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            phoneNumberService.CreatePhoneNumber(phoneNumber);
+            var result = _phoneNumberService.CreatePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            var phoneNumbersFromRepo = phoneNumberService.GetPhoneNumbers();
-            CollectionAssert.Contains(phoneNumbersFromRepo, phoneNumber);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
@@ -115,32 +121,27 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var phoneNumber = PhoneNumberBuilder.BuildRandom();
-            var phoneNumbers = new List<Phone>();
-            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
-
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _phoneNumberService = new PhoneNumberService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            phoneNumberService.CreatePhoneNumber(phoneNumber);
+            _phoneNumberService.CreatePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void GetPhoneNumberById_GivenIdIsNull_ShouldThrowExcption()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                phoneNumberService.GetPhoneNumberById(Guid.Empty);
+                _phoneNumberService.GetPhoneNumberById(Guid.Empty);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("phoneID", ex.ParamName);
@@ -150,13 +151,11 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetPhoneNumberById_GivenValidId_ShoulReturnPhoneNumberWithMatchingId()
         {
             //---------------Set up test pack-------------------
-            var phoneNumber = new PhoneNumberBuilder().WithRandomProps().Build();
-            var dbSet = new FakeDbSet<Phone> { phoneNumber };
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
+            var phoneNumber = SeedDb(1).FirstOrDefault();
+
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = phoneNumberService.GetPhoneNumberById(phoneNumber.PhoneID);
+            var result = _phoneNumberService.GetPhoneNumberById(phoneNumber.PhoneID);
             //---------------Test Result -----------------------
             Assert.AreEqual(phoneNumber, result);
         }
@@ -165,15 +164,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeletePhoneNumber_GivenEmptyPhoneNumber_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                phoneNumberService.DeletePhoneNumber(null);
+                _phoneNumberService.DeletePhoneNumber(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("phone", ex.ParamName);
@@ -182,20 +179,14 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void DeletePhoneNumber_GivenValidPhoneNumber_ShouldDeletePhoneNumber()
         {
-            //---------------Set up test pack-------------------
-            var phoneNumbers = new List<Phone>();
-            var phoneNumber = PhoneNumberBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
-
+            //---------------Set up test pack-------------------          
+            var phoneNumber = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            phoneNumberService.DeletePhoneNumber(phoneNumber);
+            _phoneNumberService.DeletePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            var phoneNumbersFromRepo = phoneNumberService.GetPhoneNumbers();
+            var phoneNumbersFromRepo = _phoneNumberService.GetPhoneNumbers();
             CollectionAssert.DoesNotContain(phoneNumbersFromRepo, phoneNumber);
         }
 
@@ -203,45 +194,43 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeletePhoneNumber_GivenValidPhoneNumber_ShouldCallSaveChanges()
         {
             //---------------Set up test pack-------------------
-            var phoneNumbers = new List<Phone>();
             var phoneNumber = PhoneNumberBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(phoneNumbers);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _phoneNumberService = new PhoneNumberService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            phoneNumberService.DeletePhoneNumber(phoneNumber);
+            _phoneNumberService.DeletePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdatePhoneNumber_GivenInvalidExistingPhoneNumber_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var phoneNumberService = CreatePhoneNumberService(applicationDbContext);
+
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => phoneNumberService.UpdatePhoneNumber(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => _phoneNumberService.UpdatePhoneNumber(null));
             //---------------Test Result -----------------------
             Assert.AreEqual("phoneToUpdate", ex.ParamName);
         }
 
-        private static PhoneNumberService CreatePhoneNumberService(IApplicationDbContext applicationDbContext)
+        private List<Phone> SeedDb(int phoneCount)
         {
-            return new PhoneNumberService(applicationDbContext);
-        }
+            var phoneNumbers = new List<Phone>();
+            for (int c = 1; c <= phoneCount; c++)
+            {
+                var phone = new PhoneNumberBuilder().WithRandomProps().Build();
+                phoneNumbers.Add(phone);
+            }
 
-        private static IApplicationDbContext CreateApplicationDbContext(IDbSet<Phone> dbSet = null)
-        {
-            if (dbSet == null) dbSet = DbSetSupport<Phone>.CreateDbSetWithAddRemoveSupport(new List<Phone>());
-            var applicationDbContext = Substitute.For<IApplicationDbContext>();
-            applicationDbContext.PhoneNumbers.Returns(_ => dbSet);
-            return applicationDbContext;
+            foreach (Phone phone in phoneNumbers)
+                _phoneNumberService.CreatePhoneNumber(phone);
+
+            return phoneNumbers;
         }
     }
 }

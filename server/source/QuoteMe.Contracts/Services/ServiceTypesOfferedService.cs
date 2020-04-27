@@ -51,16 +51,7 @@ namespace QuoteMe.Contracts.Services
         {
             if (serviceTypeToUpdate == null)
                 throw new ArgumentNullException(nameof(serviceTypeToUpdate));
-            var serviceType = GetServiceTypeById(serviceTypeToUpdate.ServiceTypeID);
-
-            if (serviceType != null)
-            {
-                serviceType.AddedBy = serviceTypeToUpdate.AddedBy;
-                serviceType.DateCreated = serviceTypeToUpdate.DateCreated;
-                serviceType.DateLastModified = serviceTypeToUpdate.DateLastModified;
-                serviceType.LastUpdatedBy = serviceTypeToUpdate.LastUpdatedBy;
-                serviceType.Name = serviceTypeToUpdate.Name;
-            }
+            _applicationDbContext.ServiceTypes.Update(serviceTypeToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
     }

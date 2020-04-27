@@ -51,24 +51,7 @@ namespace QuoteMe.Contracts.Services
         {
             if (addressToUpdate == null)
                 throw new ArgumentNullException(nameof(addressToUpdate));
-            var address = GetAddressById(addressToUpdate.AddressID);
-
-            if (address != null)
-            {
-                address.AddedBy = addressToUpdate.AddedBy;
-                address.AddressID = addressToUpdate.AddressID;
-                address.AddressLine1 = addressToUpdate.AddressLine1;
-                address.AddressLine2 = addressToUpdate.AddressLine2;
-                address.AddressTypeID = addressToUpdate.AddressTypeID;
-                address.CityOrTown = addressToUpdate.CityOrTown;
-                address.DateCreated = addressToUpdate.DateCreated;
-                address.DateLastModified = addressToUpdate.DateLastModified;
-                address.LastUpdatedBy = addressToUpdate.LastUpdatedBy;
-                address.PostalCode = addressToUpdate.PostalCode;
-                address.SpecialDescription = addressToUpdate.SpecialDescription;
-                address.StateProvinceID = addressToUpdate.StateProvinceID;
-
-            }
+            _applicationDbContext.Addresses.Update(addressToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
     }

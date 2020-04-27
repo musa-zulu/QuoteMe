@@ -1,19 +1,42 @@
-﻿using NSubstitute;
+using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using NUnit.Framework;
+using QuoteMe.Contracts.Interfaces.Services;
 using QuoteMe.Contracts.Services;
 using QuoteMe.DB;
 using QuoteMe.DB.Domain;
 using QuoteMe.Tests.Common.Builders.Models;
-using QuoteMe.Tests.Common.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Linq;
 
 namespace QuoteMe.Contracts.Tests.Services
 {
     [TestFixture]
     public class TestBusinessService
     {
+        private ApplicationDbContext _dbContext;
+        private IBusinessService _businessService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                                    .UseInMemoryDatabase("testdb")
+                                    .Options;
+            _dbContext = new ApplicationDbContext(options);
+            _dbContext.Database.EnsureCreated();
+
+            _businessService = new BusinessService(_dbContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_dbContext != null)
+                _dbContext.Database.EnsureDeleted();
+        }
+
         [Test]
         public void Construct()
         {
@@ -44,11 +67,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetBusinesses_GivenNoBusinessExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var businessService = CreateBusinessService(applicationDbContext);
+
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = businessService.GetBusinesses();
+            var result = _businessService.GetBusinesses();
             //---------------Test Result -----------------------
             Assert.AreEqual(0, result.Count);
         }
@@ -57,18 +79,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetBusinesses_GivenBusinessExistInRepo_ShouldReturnListOfBusiness()
         {
             //---------------Set up test pack-------------------           
-            var businesses = new List<Business>();
-            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var businessService = CreateBusinessService(applicationDbContext);
-
-            var business = BusinessBuilder.BuildRandom();
-            businesses.Add(business);
-            dbSet.GetEnumerator().Returns(_ => businesses.GetEnumerator());
-            applicationDbContext.Businesses.Returns(_ => dbSet);
+            SeedDb(1);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = businessService.GetBusinesses();
+            var result = _businessService.GetBusinesses();
             //---------------Test Result -----------------------
             Assert.AreEqual(1, result.Count);
         }
@@ -77,14 +91,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateBusiness_GivenBusinessIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var businessService = CreateBusinessService(applicationDbContext);
+
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                businessService.CreateBusiness(null);
+                _businessService.CreateBusiness(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("business", ex.ParamName);
@@ -95,18 +108,12 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var business = BusinessBuilder.BuildRandom();
-            var businesses = new List<Business>();
-
-            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var businesService = CreateBusinessService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            businesService.CreateBusiness(business);
-            //---------------Test Result -----------------------
-            var businessFromRepo = businesService.GetBusinesses();
-            CollectionAssert.Contains(businessFromRepo, business);
+            var result = _businessService.CreateBusiness(business);
+            //---------------Test Result -----------------------          
+            Assert.AreEqual(true, result);
         }
 
         [Test]
@@ -114,31 +121,27 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var business = BusinessBuilder.BuildRandom();
-            var businesses = new List<Business>();
-            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var businesService = CreateBusinessService(applicationDbContext);
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _businessService = new BusinessService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            businesService.CreateBusiness(business);
+            _businessService.CreateBusiness(business);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void GetBusinessById_GivenIdIsNull_ShouldThrowExcption()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var businesService = CreateBusinessService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                businesService.GetBusinessById(Guid.Empty);
+                _businessService.GetBusinessById(Guid.Empty);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("businessID", ex.ParamName);
@@ -148,13 +151,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetBusinessById_GivenValidId_ShoulReturnBusinessWithMatchingId()
         {
             //---------------Set up test pack-------------------
-            var business = new BusinessBuilder().WithRandomProps().Build();
-            var dbSet = new FakeDbSet<Business> { business };
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var businesService = CreateBusinessService(applicationDbContext);
+            var business = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = businesService.GetBusinessById(business.BusinessID);
+            var result = _businessService.GetBusinessById(business.BusinessID);
             //---------------Test Result -----------------------
             Assert.AreEqual(business, result);
         }
@@ -163,15 +163,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteBusiness_GivenNullBusiness_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var businesService = CreateBusinessService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                businesService.DeleteBusiness(null);
+                _businessService.DeleteBusiness(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("business", ex.ParamName);
@@ -181,19 +179,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteBusiness_GivenValidBusiness_ShouldDeleteBussiness()
         {
             //---------------Set up test pack-------------------
-            var businesses = new List<Business>();
-            var business = BusinessBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var businesService = CreateBusinessService(applicationDbContext);
-
+            var business = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            businesService.DeleteBusiness(business);
+            _businessService.DeleteBusiness(business);
             //---------------Test Result -----------------------
-            var businesesFromRepo = businesService.GetBusinesses();
+            var businesesFromRepo = _businessService.GetBusinesses();
             CollectionAssert.DoesNotContain(businesesFromRepo, business);
         }
 
@@ -201,46 +193,43 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteBusiness_GivenValidBusiness_ShouldCallSaveChanges()
         {
             //---------------Set up test pack-------------------
-            var businesses = new List<Business>();
-            var business = BusinessBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(businesses);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var businesService = CreateBusinessService(applicationDbContext);
+            var business = SeedDb(1).FirstOrDefault();
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _businessService = new BusinessService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            businesService.DeleteBusiness(business);
+            _businessService.DeleteBusiness(business);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdateBusiness_GivenInvalidExistingBusiness_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var businesService = CreateBusinessService(applicationDbContext);
+
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => businesService.UpdateBusiness(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => _businessService.UpdateBusiness(null));
             //---------------Test Result -----------------------
             Assert.AreEqual("businessToUpdate", ex.ParamName);
         }
 
-
-        private static BusinessService CreateBusinessService(IApplicationDbContext applicationDbContext)
+        private List<Business> SeedDb(int businessCount)
         {
-            return new BusinessService(applicationDbContext);
-        }
+            var businesses = new List<Business>();
+            for (int a = 1; a <= businessCount; a++)
+            {
+                var business = new BusinessBuilder().WithRandomProps().Build();
+                businesses.Add(business);
+            }
 
-        private static IApplicationDbContext CreateApplicationDbContext(IDbSet<Business> dbSet = null)
-        {
-            if (dbSet == null) dbSet = DbSetSupport<Business>.CreateDbSetWithAddRemoveSupport(new List<Business>());
-            var applicationDbContext = Substitute.For<IApplicationDbContext>();
-            applicationDbContext.Businesses.Returns(_ => dbSet);
-            return applicationDbContext;
+            foreach (Business business in businesses)
+                _businessService.CreateBusiness(business);
+
+            return businesses;
         }
     }
 }

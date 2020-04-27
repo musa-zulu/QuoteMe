@@ -1,19 +1,41 @@
-﻿using NSubstitute;
+using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using NUnit.Framework;
+using QuoteMe.Contracts.Interfaces.Services;
 using QuoteMe.Contracts.Services;
 using QuoteMe.DB;
 using QuoteMe.DB.Domain;
 using QuoteMe.Tests.Common.Builders.Models;
-using QuoteMe.Tests.Common.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Linq;
 
 namespace QuoteMe.Contracts.Tests.Services
 {
     [TestFixture]
     public class TestAddressService
     {
+        private ApplicationDbContext _dbContext;
+        private IAddressService _addressService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                                    .UseInMemoryDatabase("testdb")
+                                    .Options;
+            _dbContext = new ApplicationDbContext(options);
+            _dbContext.Database.EnsureCreated();
+
+            _addressService = new AddressService(_dbContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_dbContext != null)
+                _dbContext.Database.EnsureDeleted();
+        }
         [Test]
         public void Construct()
         {
@@ -43,12 +65,10 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void GetAddress_GivenNoAddressExist_ShouldReturnEmptyList()
         {
-            //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var addressService = CreateAddressService(applicationDbContext);
+            //---------------Set up test pack-------------------           
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = addressService.GetAddress();
+            var result = _addressService.GetAddress();
             //---------------Test Result -----------------------
             Assert.AreEqual(0, result.Count);
         }
@@ -57,18 +77,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetAddress_GivenAddressExistInRepo_ShouldReturnListOfAddress()
         {
             //---------------Set up test pack-------------------           
-            var addressList = new List<Address>();
-            var dbSet = DbSetSupport<Address>.CreateDbSetWithAddRemoveSupport(addressList);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressService = CreateAddressService(applicationDbContext);
-
-            var address = AddressBuilder.BuildRandom();
-            addressList.Add(address);
-            dbSet.GetEnumerator().Returns(_ => addressList.GetEnumerator());
-            applicationDbContext.Addresses.Returns(_ => dbSet);
+            SeedDb(1);
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = addressService.GetAddress();
+            var result = _addressService.GetAddress();
             //---------------Test Result -----------------------
             Assert.AreEqual(1, result.Count);
         }
@@ -77,15 +89,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateAddress_GivenAddressIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var addressService = CreateAddressService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                addressService.CreateAddress(null);
+                _addressService.CreateAddress(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("address", ex.ParamName);
@@ -96,18 +106,12 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var address = AddressBuilder.BuildRandom();
-            var addressList = new List<Address>();
-
-            var dbSet = DbSetSupport<Address>.CreateDbSetWithAddRemoveSupport(addressList);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressService = CreateAddressService(applicationDbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressService.CreateAddress(address);
+            var result = _addressService.CreateAddress(address);
             //---------------Test Result -----------------------
-            var addressFromRepo = addressService.GetAddress();
-            CollectionAssert.Contains(addressFromRepo, address);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
@@ -115,32 +119,27 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var address = AddressBuilder.BuildRandom();
-            var addressList = new List<Address>();
-            var dbSet = DbSetSupport<Address>.CreateDbSetWithAddRemoveSupport(addressList);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressService = CreateAddressService(applicationDbContext);
-
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _addressService = new AddressService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressService.CreateAddress(address);
+            _addressService.CreateAddress(address);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void GetAddressById_GivenIdIsNull_ShouldThrowExcption()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var addressService = CreateAddressService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                addressService.GetAddressById(Guid.Empty);
+                _addressService.GetAddressById(Guid.Empty);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("addressID", ex.ParamName);
@@ -150,13 +149,10 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetAddressById_GivenValidId_ShoulReturnAddressWithMatchingId()
         {
             //---------------Set up test pack-------------------
-            var address = new AddressBuilder().WithRandomProps().Build();
-            var dbSet = new FakeDbSet<Address> { address };
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressService = CreateAddressService(applicationDbContext);
+            var address = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = addressService.GetAddressById(address.AddressID);
+            var result = _addressService.GetAddressById(address.AddressID);
             //---------------Test Result -----------------------
             Assert.AreEqual(address, result);
         }
@@ -165,15 +161,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteAddress_GivenEmptyAddress_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var addressService = CreateAddressService(applicationDbContext);
 
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
-                addressService.DeleteAddress(null);
+                _addressService.DeleteAddress(null);
             });
             //---------------Test Result -----------------------
             Assert.AreEqual("address", ex.ParamName);
@@ -183,19 +177,13 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteAddress_GivenValidAddress_ShouldDeleteAddress()
         {
             //---------------Set up test pack-------------------
-            var addressList = new List<Address>();
-            var address = AddressBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<Address>.CreateDbSetWithAddRemoveSupport(addressList);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressService = CreateAddressService(applicationDbContext);
-
+            var address = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressService.DeleteAddress(address);
+            _addressService.DeleteAddress(address);
             //---------------Test Result -----------------------
-            var addressFromRepo = addressService.GetAddress();
+            var addressFromRepo = _addressService.GetAddress();
             CollectionAssert.DoesNotContain(addressFromRepo, address);
         }
 
@@ -203,46 +191,43 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteAddress_GivenValidAddress_ShouldCallSaveChanges()
         {
             //---------------Set up test pack-------------------
-            var addressList = new List<Address>();
-            var address = AddressBuilder.BuildRandom();
-
-            var dbSet = DbSetSupport<Address>.CreateDbSetWithAddRemoveSupport(addressList);
-            var applicationDbContext = CreateApplicationDbContext(dbSet);
-            var addressService = CreateAddressService(applicationDbContext);
+            var address = SeedDb(1).FirstOrDefault();
+            var _dbContext = Substitute.For<IApplicationDbContext>();
+            _addressService = new AddressService(_dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            addressService.DeleteAddress(address);
+            _addressService.DeleteAddress(address);
             //---------------Test Result -----------------------
-            applicationDbContext.Received().SaveChanges();
+            _dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdateAddress_GivenInvalidExistingAddress_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-            var applicationDbContext = CreateApplicationDbContext();
-            var addressService = CreateAddressService(applicationDbContext);
+
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => addressService.UpdateAddress(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => _addressService.UpdateAddress(null));
             //---------------Test Result -----------------------
             Assert.AreEqual("addressToUpdate", ex.ParamName);
         }
 
-        private static AddressService CreateAddressService(IApplicationDbContext applicationDbContext)
+        private List<Address> SeedDb(int addressCount)
         {
-            return new AddressService(applicationDbContext);
-        }
+            var addresses = new List<Address>();
+            for (int a = 1; a <= addressCount; a++)
+            {
+                var addess = new AddressBuilder().WithRandomProps().Build();
+                addresses.Add(addess);
+            }
 
-        private static IApplicationDbContext CreateApplicationDbContext(IDbSet<Address> dbSet = null)
-        {
-            if (dbSet == null) dbSet = DbSetSupport<Address>.CreateDbSetWithAddRemoveSupport(new List<Address>());
-            var applicationDbContext = Substitute.For<IApplicationDbContext>();
-            applicationDbContext.Addresses.Returns(_ => dbSet);
-            return applicationDbContext;
-        }
+            foreach (Address address in addresses)
+                _addressService.CreateAddress(address);
 
+            return addresses;
+        }
     }
 }

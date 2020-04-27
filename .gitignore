@@ -19,3 +19,13 @@ server/source/OpenCover/
 
 
 
+
+*.testlog
+
+server/source/.vs/QuoteMe/v16/.suo
+
+*.v2
+
+server/source/.vs/QuoteMe/v16/
+
+*.TMP

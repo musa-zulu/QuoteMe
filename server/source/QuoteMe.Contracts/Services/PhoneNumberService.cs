@@ -50,17 +50,7 @@ namespace QuoteMe.Contracts.Services
         {
             if (phoneToUpdate == null)
                 throw new ArgumentNullException(nameof(phoneToUpdate));
-            var phone = GetPhoneNumberById(phoneToUpdate.PhoneID);
-
-            if (phone != null)
-            {
-                phone.AddedBy = phoneToUpdate.AddedBy;
-                phone.DateCreated = phoneToUpdate.DateCreated;
-                phone.DateLastModified = phoneToUpdate.DateLastModified;
-                phone.LastUpdatedBy = phoneToUpdate.LastUpdatedBy;
-                phone.PhoneNumber = phoneToUpdate.PhoneNumber;
-                phone.PhoneTypeID = phoneToUpdate.PhoneTypeID;
-            }
+            _applicationDbContext.PhoneNumbers.Update(phoneToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
 
