@@ -22,8 +22,4 @@
     <ProjectReference Include="..\QuoteMe.Server\QuoteMe.Server.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
