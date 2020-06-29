@@ -21,7 +21,7 @@ namespace QuoteMe.DB.Tests.Domain
             //---------------Test Result -----------------------
         }
 
-        [TestCase("BusinessID", typeof(Guid))]
+        [TestCase("BusinessId", typeof(Guid))]
         [TestCase("Name", typeof(string))]
         [TestCase("Demographics", typeof(string))]
         [TestCase("Email", typeof(string))]

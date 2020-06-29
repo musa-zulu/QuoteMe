@@ -33,16 +33,13 @@ namespace QuoteMe.Contracts.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            if (_dbContext != null)
-                _dbContext.Database.EnsureDeleted();
+            _dbContext?.Database.EnsureDeleted();
         }
         [Test]
         public void Construct()
         {
-            //---------------Set up test pack-------------------
-
-            //---------------Assert Precondition---------------
-
+            //---------------Set up test pack-------------------s
+            //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new AddressService(Substitute.For<IApplicationDbContext>()));
             //---------------Test Result -----------------------
@@ -51,11 +48,8 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void Construct_GivenApplicationDbContextIsNull_ShouldThrow()
         {
-
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => new AddressService(null));
             //---------------Test Result -----------------------
@@ -89,9 +83,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateAddress_GivenAddressIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -102,12 +94,11 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void CreateAddress_GivenAddress_ShouldSaveAdddress()
+        public void CreateAddress_GivenAddress_ShouldSaveAddress()
         {
             //---------------Set up test pack-------------------
             var address = AddressBuilder.BuildRandom();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var result = _addressService.CreateAddress(address);
             //---------------Test Result -----------------------
@@ -119,40 +110,38 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var address = AddressBuilder.BuildRandom();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _addressService = new AddressService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _addressService = new AddressService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _addressService.CreateAddress(address);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
-        public void GetAddressById_GivenIdIsNull_ShouldThrowExcption()
+        public void GetAddressById_GivenIdIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
                 _addressService.GetAddressById(Guid.Empty);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("addressID", ex.ParamName);
+            Assert.AreEqual("addressId", ex.ParamName);
         }
 
         [Test]
-        public void GetAddressById_GivenValidId_ShoulReturnAddressWithMatchingId()
+        public void GetAddressById_GivenValidId_ShouldReturnAddressWithMatchingId()
         {
             //---------------Set up test pack-------------------
             var address = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = _addressService.GetAddressById(address.AddressID);
+            if (address == null) return;
+            var result = _addressService.GetAddressById(address.AddressId);
             //---------------Test Result -----------------------
             Assert.AreEqual(address, result);
         }
@@ -192,23 +181,21 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var address = SeedDb(1).FirstOrDefault();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _addressService = new AddressService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _addressService = new AddressService(dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             _addressService.DeleteAddress(address);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdateAddress_GivenInvalidExistingAddress_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => _addressService.UpdateAddress(null));
             //---------------Test Result -----------------------
@@ -218,13 +205,13 @@ namespace QuoteMe.Contracts.Tests.Services
         private List<Address> SeedDb(int addressCount)
         {
             var addresses = new List<Address>();
-            for (int a = 1; a <= addressCount; a++)
+            for (var a = 1; a <= addressCount; a++)
             {
-                var addess = new AddressBuilder().WithRandomProps().Build();
-                addresses.Add(addess);
+                var address = new AddressBuilder().WithRandomProps().Build();
+                addresses.Add(address);
             }
 
-            foreach (Address address in addresses)
+            foreach (var address in addresses)
                 _addressService.CreateAddress(address);
 
             return addresses;

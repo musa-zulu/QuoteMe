@@ -33,17 +33,14 @@ namespace QuoteMe.Contracts.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            if (_dbContext != null)
-                _dbContext.Database.EnsureDeleted();
+            _dbContext?.Database.EnsureDeleted();
         }
 
         [Test]
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
-            //---------------Assert Precondition---------------
-
+            //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new ServiceTypesOfferedService(Substitute.For<IApplicationDbContext>()));
             //---------------Test Result -----------------------
@@ -52,11 +49,8 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void Construct_GivenApplicationDbContextIsNull_ShouldThrow()
         {
-
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => new ServiceTypesOfferedService(null));
             //---------------Test Result -----------------------
@@ -67,7 +61,6 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetServiceTypes_GivenNoServiceTypeExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             var result = _serviceTypesOfferedService.GetServiceTypes();
@@ -91,9 +84,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateServiceType_GivenServiceTypeIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -109,7 +100,6 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Set up test pack-------------------
             var serviceType = ServiceTypeBuilder.BuildRandom();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var result = _serviceTypesOfferedService.CreateServiceType(serviceType);
             //---------------Test Result -----------------------
@@ -121,23 +111,20 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var serviceType = ServiceTypeBuilder.BuildRandom();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _serviceTypesOfferedService = new ServiceTypesOfferedService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _serviceTypesOfferedService = new ServiceTypesOfferedService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _serviceTypesOfferedService.CreateServiceType(serviceType);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
-        public void GetServiceTypeById_GivenIdIsNull_ShouldThrowExcption()
+        public void GetServiceTypeById_GivenIdIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -148,13 +135,14 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void GetServiceTypeById_GivenValidId_ShoulReturnServiceTypeWithMatchingId()
+        public void GetServiceTypeById_GivenValidId_ShouldReturnServiceTypeWithMatchingId()
         {
             //---------------Set up test pack-------------------
             var serviceType = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = _serviceTypesOfferedService.GetServiceTypeById(serviceType.ServiceTypeID);
+            if (serviceType == null) return;
+            var result = _serviceTypesOfferedService.GetServiceTypeById(serviceType.ServiceTypeId);
             //---------------Test Result -----------------------
             Assert.AreEqual(serviceType, result);
         }
@@ -163,9 +151,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteServiceType_GivenEmptyServiceType_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -181,7 +167,6 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Set up test pack-------------------
             var serviceType = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _serviceTypesOfferedService.DeleteServiceType(serviceType);
             //---------------Test Result -----------------------
@@ -194,23 +179,20 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var serviceType = ServiceTypeBuilder.BuildRandom();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _serviceTypesOfferedService = new ServiceTypesOfferedService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _serviceTypesOfferedService = new ServiceTypesOfferedService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _serviceTypesOfferedService.DeleteServiceType(serviceType);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdateServiceType_GivenInvalidExistingServiceType_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => _serviceTypesOfferedService.UpdateServiceType(null));
             //---------------Test Result -----------------------
@@ -220,13 +202,13 @@ namespace QuoteMe.Contracts.Tests.Services
         private List<ServiceType> SeedDb(int serviceCount)
         {
             var serviceTypes = new List<ServiceType>();
-            for (int c = 1; c <= serviceCount; c++)
+            for (var c = 1; c <= serviceCount; c++)
             {
                 var serviceType = new ServiceTypeBuilder().WithRandomProps().Build();
                 serviceTypes.Add(serviceType);
             }
 
-            foreach (ServiceType serviceType in serviceTypes)
+            foreach (var serviceType in serviceTypes)
                 _serviceTypesOfferedService.CreateServiceType(serviceType);
 
             return serviceTypes;

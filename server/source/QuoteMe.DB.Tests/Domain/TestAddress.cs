@@ -20,14 +20,14 @@ namespace QuoteMe.DB.Tests.Domain
             //---------------Test Result -----------------------
         }
 
-        [TestCase("AddressID", typeof(Guid))]
+        [TestCase("AddressId", typeof(Guid))]
         [TestCase("AddressLine1", typeof(string))]
         [TestCase("AddressLine2", typeof(string))]
         [TestCase("CityOrTown", typeof(string))]
         [TestCase("PostalCode", typeof(int))]
         [TestCase("SpecialDescription", typeof(string))]
-        [TestCase("StateProvinceID", typeof(Guid))]
-        [TestCase("AddressTypeID", typeof(Guid))]
+        [TestCase("StateProvinceId", typeof(Guid))]
+        [TestCase("AddressTypeId", typeof(Guid))]
         public void Type_ShouldHaveProperty(string propertyName, Type propertyType)
         {
             //---------------Set up test pack-------------------

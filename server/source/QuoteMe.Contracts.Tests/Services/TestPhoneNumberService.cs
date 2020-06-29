@@ -33,16 +33,13 @@ namespace QuoteMe.Contracts.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            if (_dbContext != null)
-                _dbContext.Database.EnsureDeleted();
+            _dbContext?.Database.EnsureDeleted();
         }
         [Test]
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
-            //---------------Assert Precondition---------------
-
+            //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new PhoneNumberService(Substitute.For<IApplicationDbContext>()));
             //---------------Test Result -----------------------
@@ -53,9 +50,7 @@ namespace QuoteMe.Contracts.Tests.Services
         {
 
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => new PhoneNumberService(null));
             //---------------Test Result -----------------------
@@ -66,7 +61,6 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetPhoneNumbers_GivenNoPhoneNumberExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             var result = _phoneNumberService.GetPhoneNumbers();
@@ -90,9 +84,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreatePhoneNumber_GivenPhoneNumberIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -107,9 +99,7 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var phoneNumber = PhoneNumberBuilder.BuildRandom();
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var result = _phoneNumberService.CreatePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
@@ -132,12 +122,10 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void GetPhoneNumberById_GivenIdIsNull_ShouldThrowExcption()
+        public void GetPhoneNumberById_GivenIdIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -148,14 +136,14 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void GetPhoneNumberById_GivenValidId_ShoulReturnPhoneNumberWithMatchingId()
+        public void GetPhoneNumberById_GivenValidId_ShouldReturnPhoneNumberWithMatchingId()
         {
             //---------------Set up test pack-------------------
             var phoneNumber = SeedDb(1).FirstOrDefault();
-
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = _phoneNumberService.GetPhoneNumberById(phoneNumber.PhoneID);
+            if (phoneNumber == null) return;
+            var result = _phoneNumberService.GetPhoneNumberById(phoneNumber.PhoneId);
             //---------------Test Result -----------------------
             Assert.AreEqual(phoneNumber, result);
         }
@@ -164,9 +152,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeletePhoneNumber_GivenEmptyPhoneNumber_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -182,7 +168,6 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Set up test pack-------------------          
             var phoneNumber = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _phoneNumberService.DeletePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
@@ -195,14 +180,13 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var phoneNumber = PhoneNumberBuilder.BuildRandom();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _phoneNumberService = new PhoneNumberService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _phoneNumberService = new PhoneNumberService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _phoneNumberService.DeletePhoneNumber(phoneNumber);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
@@ -221,13 +205,13 @@ namespace QuoteMe.Contracts.Tests.Services
         private List<Phone> SeedDb(int phoneCount)
         {
             var phoneNumbers = new List<Phone>();
-            for (int c = 1; c <= phoneCount; c++)
+            for (var c = 1; c <= phoneCount; c++)
             {
                 var phone = new PhoneNumberBuilder().WithRandomProps().Build();
                 phoneNumbers.Add(phone);
             }
 
-            foreach (Phone phone in phoneNumbers)
+            foreach (var phone in phoneNumbers)
                 _phoneNumberService.CreatePhoneNumber(phone);
 
             return phoneNumbers;

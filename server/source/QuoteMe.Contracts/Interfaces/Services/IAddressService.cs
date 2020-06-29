@@ -8,7 +8,7 @@ namespace QuoteMe.Contracts.Interfaces.Services
     {
         List<Address> GetAddress();
         bool CreateAddress(Address address);
-        Address GetAddressById(Guid addressID);
+        Address GetAddressById(Guid addressId);
         bool UpdateAddress(Address addressToUpdate);
         bool DeleteAddress(Address address);
     }

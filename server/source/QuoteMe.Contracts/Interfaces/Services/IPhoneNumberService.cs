@@ -8,7 +8,7 @@ namespace QuoteMe.Contracts.Interfaces.Services
     {
         List<Phone> GetPhoneNumbers();
         bool CreatePhoneNumber(Phone phone);
-        Phone GetPhoneNumberById(Guid phoneID);
+        Phone GetPhoneNumberById(Guid phoneId);
         bool UpdatePhoneNumber(Phone phoneToUpdate);
         bool DeletePhoneNumber(Phone phone);
     }

@@ -40,11 +40,11 @@ namespace QuoteMe.Contracts.Services
                .ToList();
         }
 
-        public Address GetAddressById(Guid addressID)
+        public Address GetAddressById(Guid addressId)
         {
-            if (addressID == Guid.Empty)
-                throw new ArgumentNullException(nameof(addressID));
-            return _applicationDbContext.Addresses.FirstOrDefault(x => x.AddressID == addressID);
+            if (addressId == Guid.Empty)
+                throw new ArgumentNullException(nameof(addressId));
+            return _applicationDbContext.Addresses.FirstOrDefault(x => x.AddressId == addressId);
         }
 
         public bool UpdateAddress(Address addressToUpdate)

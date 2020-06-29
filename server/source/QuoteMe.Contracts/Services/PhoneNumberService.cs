@@ -32,11 +32,11 @@ namespace QuoteMe.Contracts.Services
             return _applicationDbContext.SaveChanges() > 0;
         }
 
-        public Phone GetPhoneNumberById(Guid phoneID)
+        public Phone GetPhoneNumberById(Guid phoneId)
         {
-            if (phoneID == Guid.Empty)
-                throw new ArgumentNullException(nameof(phoneID));
-            return _applicationDbContext.PhoneNumbers.FirstOrDefault(x => x.PhoneID == phoneID);
+            if (phoneId == Guid.Empty)
+                throw new ArgumentNullException(nameof(phoneId));
+            return _applicationDbContext.PhoneNumbers.FirstOrDefault(x => x.PhoneId == phoneId);
         }
 
         public List<Phone> GetPhoneNumbers()
@@ -53,6 +53,5 @@ namespace QuoteMe.Contracts.Services
             _applicationDbContext.PhoneNumbers.Update(phoneToUpdate);
             return _applicationDbContext.SaveChanges() > 0;
         }
-
     }
 }

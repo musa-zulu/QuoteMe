@@ -3,7 +3,7 @@ using NSubstitute;
 using QuoteMe.Contracts.Interfaces.Services;
 using QuoteMe.Server.Controllers.V1;
 
-namespace QuoteMe.Tests.Common.Builders.Controllers
+namespace QuoteMe.Server.Tests.Builders.Controllers
 {
     public class ClientsControllerBuilder
     {
@@ -15,10 +15,10 @@ namespace QuoteMe.Tests.Common.Builders.Controllers
             AddressService = Substitute.For<IAddressService>();
         }
 
-        public IClientService ClientService { get; private set; }
-        public IAddressService AddressService { get; private set; }
-        public IMapper Mapper { get; private set; }
-        public IUriService UriService { get; private set; }
+        private IClientService ClientService { get; set; }
+        private IAddressService AddressService { get; set; }
+        private IMapper Mapper { get; set; }
+        private IUriService UriService { get; set; }
 
         public ClientsControllerBuilder WithMapper(IMapper mapper)
         {

@@ -33,17 +33,14 @@ namespace QuoteMe.Contracts.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            if (_dbContext != null)
-                _dbContext.Database.EnsureDeleted();
+            _dbContext?.Database.EnsureDeleted();
         }
 
         [Test]
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
-            //---------------Assert Precondition---------------
-
+            //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new BusinessService(Substitute.For<IApplicationDbContext>()));
             //---------------Test Result -----------------------
@@ -52,11 +49,8 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void Construct_GivenApplicationDbContextIsNull_ShouldThrow()
         {
-
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => new BusinessService(null));
             //---------------Test Result -----------------------
@@ -67,7 +61,6 @@ namespace QuoteMe.Contracts.Tests.Services
         public void GetBusinesses_GivenNoBusinessExist_ShouldReturnEmptyList()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             var result = _businessService.GetBusinesses();
@@ -91,9 +84,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateBusiness_GivenBusinessIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -121,23 +112,20 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var business = BusinessBuilder.BuildRandom();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _businessService = new BusinessService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _businessService = new BusinessService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _businessService.CreateBusiness(business);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
-        public void GetBusinessById_GivenIdIsNull_ShouldThrowExcption()
+        public void GetBusinessById_GivenIdIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -148,13 +136,14 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void GetBusinessById_GivenValidId_ShoulReturnBusinessWithMatchingId()
+        public void GetBusinessById_GivenValidId_ShouldReturnBusinessWithMatchingId()
         {
             //---------------Set up test pack-------------------
             var business = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = _businessService.GetBusinessById(business.BusinessID);
+            if (business == null) return;
+            var result = _businessService.GetBusinessById(business.BusinessId);
             //---------------Test Result -----------------------
             Assert.AreEqual(business, result);
         }
@@ -163,9 +152,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void DeleteBusiness_GivenNullBusiness_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -176,17 +163,16 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void DeleteBusiness_GivenValidBusiness_ShouldDeleteBussiness()
+        public void DeleteBusiness_GivenValidBusiness_ShouldDeleteBusiness()
         {
             //---------------Set up test pack-------------------
             var business = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _businessService.DeleteBusiness(business);
             //---------------Test Result -----------------------
-            var businesesFromRepo = _businessService.GetBusinesses();
-            CollectionAssert.DoesNotContain(businesesFromRepo, business);
+            var businessesFromRepo = _businessService.GetBusinesses();
+            CollectionAssert.DoesNotContain(businessesFromRepo, business);
         }
 
         [Test]
@@ -194,23 +180,20 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var business = SeedDb(1).FirstOrDefault();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _businessService = new BusinessService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _businessService = new BusinessService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _businessService.DeleteBusiness(business);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
         public void UpdateBusiness_GivenInvalidExistingBusiness_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => _businessService.UpdateBusiness(null));
             //---------------Test Result -----------------------
@@ -220,13 +203,13 @@ namespace QuoteMe.Contracts.Tests.Services
         private List<Business> SeedDb(int businessCount)
         {
             var businesses = new List<Business>();
-            for (int a = 1; a <= businessCount; a++)
+            for (var a = 1; a <= businessCount; a++)
             {
                 var business = new BusinessBuilder().WithRandomProps().Build();
                 businesses.Add(business);
             }
 
-            foreach (Business business in businesses)
+            foreach (var business in businesses)
                 _businessService.CreateBusiness(business);
 
             return businesses;

@@ -8,7 +8,7 @@ namespace QuoteMe.Contracts.Interfaces.Services
     {
         List<Client> GetClients();
         bool CreateClient(Client client);
-        Client GetClientById(Guid clientID);
+        Client GetClientById(Guid clientId);
         bool UpdateClient(Client clientToUpdate);
         bool DeleteClient(Client client);
     }

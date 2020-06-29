@@ -5,7 +5,7 @@ namespace QuoteMe.DB.Domain
 {
     public class Business : EntityBase
     {
-        public Guid BusinessID { get; set; }
+        public Guid BusinessId { get; set; }
         public string Name { get; set; }
         public string Demographics { get; set; }
         public string Email { get; set; }

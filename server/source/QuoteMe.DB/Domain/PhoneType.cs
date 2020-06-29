@@ -4,7 +4,7 @@ namespace QuoteMe.DB.Domain
 {
     public class PhoneType : EntityBase
     {
-        public Guid PhoneTypeID { get; set; }
+        public Guid PhoneTypeId { get; set; }
         public string Name { get; set; }
     }
 }

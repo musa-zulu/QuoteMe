@@ -33,17 +33,14 @@ namespace QuoteMe.Contracts.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            if (_dbContext != null)
-                _dbContext.Database.EnsureDeleted();
+            _dbContext?.Database.EnsureDeleted();
         }
 
         [Test]
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
-            //---------------Assert Precondition---------------
-
+            //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new ClientService(Substitute.For<IApplicationDbContext>()));
             //---------------Test Result -----------------------
@@ -52,11 +49,8 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void Construct_GivenApplicationDbContextIsNull_ShouldThrow()
         {
-
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => new ClientService(null));
             //---------------Test Result -----------------------
@@ -102,9 +96,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void CreateClient_GivenClientIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -132,23 +124,21 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var client = ClientBuilder.BuildRandom();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _clientService = new ClientService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _clientService = new ClientService(dbContext);
             //---------------Assert Precondition----------------
 
             //---------------Execute Test ----------------------
             _clientService.CreateClient(client);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
-        public void GetClientById_GivenIdIsNull_ShouldThrowExcption()
+        public void GetClientById_GivenIdIsNull_ShouldThrowException()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -159,13 +149,14 @@ namespace QuoteMe.Contracts.Tests.Services
         }
 
         [Test]
-        public void GetClientById_GivenValidId_ShoulReturnClientWithMatchingId()
+        public void GetClientById_GivenValidId_ShouldReturnClientWithMatchingId()
         {
             //---------------Set up test pack-------------------
             var client = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var result = _clientService.GetClientById(client.ClientID);
+            if (client == null) return;
+            var result = _clientService.GetClientById(client.ClientId);
             //---------------Test Result -----------------------
             Assert.AreEqual(client, result);
         }
@@ -173,10 +164,8 @@ namespace QuoteMe.Contracts.Tests.Services
         [Test]
         public void DeleteClient_GivenEmptyClient_ShouldThrowException()
         {
-            //---------------Set up test pack-------------------          
-
+            //---------------Set up test pack-------------------     
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() =>
             {
@@ -192,7 +181,6 @@ namespace QuoteMe.Contracts.Tests.Services
             //---------------Set up test pack-------------------  
             var client = SeedDb(1).FirstOrDefault();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _clientService.DeleteClient(client);
             //---------------Test Result -----------------------
@@ -205,14 +193,13 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var client = SeedDb(1).FirstOrDefault();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _clientService = new ClientService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _clientService = new ClientService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _clientService.DeleteClient(client);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         [Test]
@@ -220,7 +207,6 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var ex = Assert.Throws<ArgumentNullException>(() => _clientService.UpdateClient(null));
             //---------------Test Result -----------------------
@@ -234,7 +220,6 @@ namespace QuoteMe.Contracts.Tests.Services
             var client = SeedDb(2);
             var clientToUpdate = client.FirstOrDefault();
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var result = _clientService.UpdateClient(clientToUpdate);
             //---------------Test Result -----------------------
@@ -246,26 +231,25 @@ namespace QuoteMe.Contracts.Tests.Services
         {
             //---------------Set up test pack-------------------
             var clientToUpdate = SeedDb(1).FirstOrDefault();
-            var _dbContext = Substitute.For<IApplicationDbContext>();
-            _clientService = new ClientService(_dbContext);
+            var dbContext = Substitute.For<IApplicationDbContext>();
+            _clientService = new ClientService(dbContext);
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             _clientService.UpdateClient(clientToUpdate);
             //---------------Test Result -----------------------
-            _dbContext.Received().SaveChanges();
+            dbContext.Received().SaveChanges();
         }
 
         private List<Client> SeedDb(int clientCount)
         {
             var clients = new List<Client>();
-            for (int c = 1; c <= clientCount; c++)
+            for (var c = 1; c <= clientCount; c++)
             {
                 var client = new ClientBuilder().WithRandomProps().Build();
                 clients.Add(client);
             }
 
-            foreach (Client client in clients)
+            foreach (var client in clients)
                 _clientService.CreateClient(client);
 
             return clients;

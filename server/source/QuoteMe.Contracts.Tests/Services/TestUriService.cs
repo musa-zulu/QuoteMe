@@ -10,9 +10,7 @@ namespace QuoteMe.Contracts.Tests.Services
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
-            //---------------Assert Precondition---------------
-
+            //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new UriService(string.Empty));
             //---------------Test Result -----------------------
@@ -25,12 +23,10 @@ namespace QuoteMe.Contracts.Tests.Services
             const string baseUri = "http://localhost/";
             var uriService = new UriService(baseUri);
             //---------------Assert Precondition---------------
-
             //---------------Execute Test ----------------------
             var result = uriService.GetAllUri();
             //---------------Test Result -----------------------
             Assert.AreEqual(baseUri, result.AbsoluteUri);
-
         }
     }
 }

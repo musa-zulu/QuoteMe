@@ -33,11 +33,11 @@ namespace QuoteMe.Contracts.Services
             return _applicationDbContext.SaveChanges() > 0;
         }
 
-        public ServiceType GetServiceTypeById(Guid serviceTypeID)
+        public ServiceType GetServiceTypeById(Guid serviceTypeId)
         {
-            if (serviceTypeID == Guid.Empty)
-                throw new ArgumentNullException(nameof(serviceTypeID));
-            return _applicationDbContext.ServiceTypes.FirstOrDefault(x => x.ServiceTypeID == serviceTypeID);
+            if (serviceTypeId == Guid.Empty)
+                throw new ArgumentNullException(nameof(serviceTypeId));
+            return _applicationDbContext.ServiceTypes.FirstOrDefault(x => x.ServiceTypeId == serviceTypeId);
         }
 
         public List<ServiceType> GetServiceTypes()

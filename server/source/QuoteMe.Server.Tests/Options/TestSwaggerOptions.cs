@@ -29,7 +29,6 @@ namespace QuoteMe.Server.Tests.Options
             var sut = typeof(SwaggerOptions);
 
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             sut.ShouldHaveProperty(propertyName, propertyType);
 

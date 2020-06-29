@@ -8,7 +8,7 @@ namespace QuoteMe.Contracts.Interfaces.Services
     {
         List<ServiceType> GetServiceTypes();
         bool CreateServiceType(ServiceType serviceType);
-        ServiceType GetServiceTypeById(Guid serviceTypeID);
+        ServiceType GetServiceTypeById(Guid serviceTypeId);
         bool UpdateServiceType(ServiceType serviceTypeToUpdate);
         bool DeleteServiceType(ServiceType serviceType);
     }

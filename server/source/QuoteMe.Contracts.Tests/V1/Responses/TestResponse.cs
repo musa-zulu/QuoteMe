@@ -12,9 +12,7 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new Response<Type>());
             //---------------Test Result -----------------------
@@ -24,9 +22,7 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
         public void Construct_GivenAnInput_ShouldSetDataToThatValue()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var sut = new Response<int>(1);
             //---------------Test Result -----------------------
@@ -38,9 +34,7 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
         {
             //---------------Set up test pack-------------------
             var sut = typeof(Response<Type>);
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             sut.ShouldHaveProperty(propertyName, propertyType);
             //---------------Test Result -----------------------

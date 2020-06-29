@@ -33,11 +33,11 @@ namespace QuoteMe.Contracts.Services
             return _applicationDbContext.SaveChanges() > 0;
         }
 
-        public Business GetBusinessById(Guid businessID)
+        public Business GetBusinessById(Guid businessId)
         {
-            if (businessID == Guid.Empty)
-                throw new ArgumentNullException(nameof(businessID));
-            return _applicationDbContext.Businesses.FirstOrDefault(x => x.BusinessID == businessID);
+            if (businessId == Guid.Empty)
+                throw new ArgumentNullException(nameof(businessId));
+            return _applicationDbContext.Businesses.FirstOrDefault(x => x.BusinessId == businessId);
         }
 
         public List<Business> GetBusinesses()

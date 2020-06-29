@@ -55,10 +55,10 @@ namespace QuoteMe.Server
             app.UseCors(options =>
                 options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
-            app.UseMvc();
+            //app.UseMvc();
 
             // This returns the context.
-            using var context = services.GetService<ApplicationDbContext>();
+            var context = services.GetService<ApplicationDbContext>();
             context.Database.Migrate();
         }
     }

@@ -32,11 +32,11 @@ namespace QuoteMe.Contracts.Services
             return _applicationDbContext.SaveChanges() > 0;
         }
 
-        public ServicesOffered GetServiceOfferedById(Guid serviceOfferedID)
+        public ServicesOffered GetServiceOfferedById(Guid serviceOfferedId)
         {
-            if (serviceOfferedID == Guid.Empty)
-                throw new ArgumentNullException(nameof(serviceOfferedID));
-            return _applicationDbContext.ServicesOffered.FirstOrDefault(x => x.ServicesOfferedID == serviceOfferedID);
+            if (serviceOfferedId == Guid.Empty)
+                throw new ArgumentNullException(nameof(serviceOfferedId));
+            return _applicationDbContext.ServicesOffered.FirstOrDefault(x => x.ServicesOfferedId == serviceOfferedId);
         }
 
         public List<ServicesOffered> GetServicesOffered()

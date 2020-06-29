@@ -12,9 +12,7 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new ErrorModel());
             //---------------Test Result -----------------------
@@ -26,9 +24,7 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
         {
             //---------------Set up test pack-------------------
             var sut = typeof(ErrorModel);
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             sut.ShouldHaveProperty(propertyName, propertyType);
             //---------------Test Result -----------------------

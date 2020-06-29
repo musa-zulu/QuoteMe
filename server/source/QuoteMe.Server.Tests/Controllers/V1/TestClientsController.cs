@@ -6,10 +6,10 @@ using QuoteMe.Contracts.Interfaces.Services;
 using QuoteMe.Contracts.V1.Responses;
 using QuoteMe.DB.Domain;
 using QuoteMe.Server.Controllers.V1;
-using QuoteMe.Tests.Common.Builders.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using QuoteMe.Server.Tests.Builders.Controllers;
 
 namespace QuoteMe.Server.Tests.Controllers.V1
 {
@@ -17,7 +17,7 @@ namespace QuoteMe.Server.Tests.Controllers.V1
     public class TestClientsController
     {
         [Test]
-        public void Contruct()
+        public void Construct()
         {
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------

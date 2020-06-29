@@ -8,7 +8,7 @@ namespace QuoteMe.Contracts.Interfaces.Services
     {
         List<Business> GetBusinesses();
         bool CreateBusiness(Business business);
-        Business GetBusinessById(Guid businessID);
+        Business GetBusinessById(Guid businessId);
         bool UpdateBusiness(Business businessToUpdate);
         bool DeleteBusiness(Business business);
     }

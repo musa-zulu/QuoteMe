@@ -22,7 +22,6 @@ namespace QuoteMe.DB.Tests.Domain
 
         [TestCase("DateCreated", typeof(DateTime?))]
         [TestCase("DateLastModified", typeof(DateTime?))]
-        [TestCase("rowguid", typeof(Guid))]
         [TestCase("AddedBy", typeof(string))]
         [TestCase("LastUpdatedBy", typeof(string))]
         public void Type_ShouldHaveProperty(string propertyName, Type propertyType)

@@ -13,9 +13,7 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
         public void Construct()
         {
             //---------------Set up test pack-------------------
-
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             Assert.DoesNotThrow(() => new PagedResponse<Type>());
             //---------------Test Result -----------------------
@@ -27,7 +25,6 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
             //---------------Set up test pack-------------------
             IEnumerable<int> data = new int[] { 1 };
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             var sut = new PagedResponse<int>(data);
             //---------------Test Result -----------------------      
@@ -46,7 +43,6 @@ namespace QuoteMe.Contracts.Tests.V1.Responses
             var sut = typeof(PagedResponse<Type>);
 
             //---------------Assert Precondition----------------
-
             //---------------Execute Test ----------------------
             sut.ShouldHaveProperty(propertyName, propertyType);
             //---------------Test Result -----------------------

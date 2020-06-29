@@ -20,7 +20,7 @@ namespace QuoteMe.DB.Tests.Domain
             //---------------Test Result -----------------------
         }
 
-        [TestCase("ClientID", typeof(Guid))]
+        [TestCase("ClientId", typeof(Guid))]
         [TestCase("Title", typeof(string))]
         [TestCase("FirstName", typeof(string))]
         [TestCase("MiddleName", typeof(string))]
@@ -30,9 +30,9 @@ namespace QuoteMe.DB.Tests.Domain
         [TestCase("EmailPromotion", typeof(bool))]
         [TestCase("AdditionalContactInfo", typeof(string))]
         [TestCase("Demographics", typeof(string))]
-        [TestCase("PersonTypeID", typeof(Guid))]
-        [TestCase("AddressID", typeof(Guid))]
-        [TestCase("PhoneID", typeof(Guid))]
+        [TestCase("PersonTypeId", typeof(Guid))]
+        [TestCase("AddressId", typeof(Guid))]
+        [TestCase("PhoneId", typeof(Guid))]
         public void Type_ShouldHaveProperty(string propertyName, Type propertyType)
         {
             //---------------Set up test pack-------------------
