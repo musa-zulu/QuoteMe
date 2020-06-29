@@ -131,7 +131,7 @@ namespace QuoteMe.Contracts.Tests.Services
                 _serviceTypesOfferedService.GetServiceTypeById(Guid.Empty);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("serviceTypeID", ex.ParamName);
+            Assert.AreEqual("serviceTypeId", ex.ParamName);
         }
 
         [Test]

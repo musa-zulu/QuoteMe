@@ -132,7 +132,7 @@ namespace QuoteMe.Contracts.Tests.Services
                 _businessService.GetBusinessById(Guid.Empty);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("businessID", ex.ParamName);
+            Assert.AreEqual("businessId", ex.ParamName);
         }
 
         [Test]

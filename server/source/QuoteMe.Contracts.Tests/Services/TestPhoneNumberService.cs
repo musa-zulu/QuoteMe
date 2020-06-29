@@ -132,7 +132,7 @@ namespace QuoteMe.Contracts.Tests.Services
                 _phoneNumberService.GetPhoneNumberById(Guid.Empty);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("phoneID", ex.ParamName);
+            Assert.AreEqual("phoneId", ex.ParamName);
         }
 
         [Test]

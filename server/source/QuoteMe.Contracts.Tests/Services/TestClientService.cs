@@ -145,7 +145,7 @@ namespace QuoteMe.Contracts.Tests.Services
                 _clientService.GetClientById(Guid.Empty);
             });
             //---------------Test Result -----------------------
-            Assert.AreEqual("clientID", ex.ParamName);
+            Assert.AreEqual("clientId", ex.ParamName);
         }
 
         [Test]

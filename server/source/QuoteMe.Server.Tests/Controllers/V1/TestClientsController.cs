@@ -22,7 +22,8 @@ namespace QuoteMe.Server.Tests.Controllers.V1
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            Assert.DoesNotThrow(() => new ClientsController(Substitute.For<IClientService>(), Substitute.For<IMapper>(), Substitute.For<IAddressService>(), Substitute.For<IUriService>()));
+            Assert.DoesNotThrow(() => new ClientsController(Substitute.For<IClientService>(), Substitute.For<IMapper>(),
+                Substitute.For<IAddressService>(), Substitute.For<IUriService>()));
             //---------------Test Result -----------------------
         }
 
@@ -32,7 +33,8 @@ namespace QuoteMe.Server.Tests.Controllers.V1
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(null, Substitute.For<IMapper>(), Substitute.For<IAddressService>(), Substitute.For<IUriService>()));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(null, Substitute.For<IMapper>(),
+                Substitute.For<IAddressService>(), Substitute.For<IUriService>()));
             //---------------Test Result -----------------------
             Assert.AreEqual("clientService", ex.ParamName);
         }
@@ -43,7 +45,8 @@ namespace QuoteMe.Server.Tests.Controllers.V1
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(Substitute.For<IClientService>(), null, Substitute.For<IAddressService>(), Substitute.For<IUriService>()));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(Substitute.For<IClientService>(),
+                null, Substitute.For<IAddressService>(), Substitute.For<IUriService>()));
             //---------------Test Result -----------------------
             Assert.AreEqual("mapper", ex.ParamName);
         }
@@ -54,7 +57,8 @@ namespace QuoteMe.Server.Tests.Controllers.V1
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(Substitute.For<IClientService>(), Substitute.For<IMapper>(), null, Substitute.For<IUriService>()));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(Substitute.For<IClientService>(),
+                Substitute.For<IMapper>(), null, Substitute.For<IUriService>()));
             //---------------Test Result -----------------------
             Assert.AreEqual("addressService", ex.ParamName);
         }
@@ -65,7 +69,8 @@ namespace QuoteMe.Server.Tests.Controllers.V1
             //---------------Set up test pack-------------------
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
-            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(Substitute.For<IClientService>(), Substitute.For<IMapper>(), Substitute.For<IAddressService>(), null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new ClientsController(Substitute.For<IClientService>(),
+                Substitute.For<IMapper>(), Substitute.For<IAddressService>(), null));
             //---------------Test Result -----------------------
             Assert.AreEqual("uriService", ex.ParamName);
         }
@@ -88,7 +93,7 @@ namespace QuoteMe.Server.Tests.Controllers.V1
         {
             //---------------Set up test pack-------------------
             var clientsController = CreateClientsControllerBuilder()
-                                    .Build();
+                .Build();
             //---------------Assert Precondition----------------
             //---------------Execute Test ----------------------
             var result = clientsController.GetAll();
@@ -113,7 +118,7 @@ namespace QuoteMe.Server.Tests.Controllers.V1
         }
 
         [Test]
-        public void Get_ShouldCallMapper()
+        public void GetAll_ShouldCallMapper()
         {
             //---------------Set up test pack-------------------
             var mapper = Substitute.For<IMapper>();
@@ -131,11 +136,10 @@ namespace QuoteMe.Server.Tests.Controllers.V1
             //---------------Test Result -----------------------
             mapper.Received(1).Map<List<ClientResponse>>(clients);
         }
-
+        
         private static ClientsControllerBuilder CreateClientsControllerBuilder()
         {
             return new ClientsControllerBuilder();
         }
-
     }
 }
