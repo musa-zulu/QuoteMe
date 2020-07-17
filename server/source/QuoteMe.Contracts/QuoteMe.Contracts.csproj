@@ -16,6 +16,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -131,6 +132,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\DefaultDateTimeProvider.cs" />
+    <Compile Include="Helpers\IDateTimeProvider.cs" />
     <Compile Include="Interfaces\Services\IServiceOfferedService.cs" />
     <Compile Include="Interfaces\Services\IAddressService.cs" />
     <Compile Include="Interfaces\Services\IPhoneNumberService.cs" />
@@ -147,6 +150,8 @@
     <Compile Include="Services\ServiceTypesOfferedService.cs" />
     <Compile Include="Services\UriService.cs" />
     <Compile Include="V1\ApiRoutes.cs" />
+    <Compile Include="V1\Requests\CreateClientRequest.cs" />
+    <Compile Include="V1\Requests\UpdateClientRequest.cs" />
     <Compile Include="V1\Responses\ClientResponse.cs" />
     <Compile Include="V1\Responses\ErrorModel.cs" />
     <Compile Include="V1\Responses\ErrorResponse.cs" />
@@ -162,9 +167,6 @@
       <Project>{C92A8127-0235-4E28-899D-852B69D5BC17}</Project>
       <Name>QuoteMe.DB</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="V1\Requests\Queries\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -5,6 +5,8 @@
     <IsPackable>false</IsPackable>
 
     <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,12 +17,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="PeanutButter.RandomGenerators" Version="1.2.254" />
     <PackageReference Include="PeanutButter.TestUtils.Generic" Version="1.2.357" />
     <PackageReference Include="PeanutButter.Utils" Version="1.2.358" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\QuoteMe.Server\QuoteMe.Server.csproj" />
+    <ProjectReference Include="..\QuoteMe.Tests.Common\QuoteMe.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>
